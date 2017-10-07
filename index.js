@@ -11,7 +11,7 @@ const githubData = {
   repo: 'paulirish/lighthouse', // (author/repo)
   sha: 'ade63cf62b1c54cf6dc070a6c5db876e90bffa98', // (commit sha)
   pr: 7, // (pull request #)
-  token: 'dce2072348fba925518c8b38bc0b48f8acb44369', // (github oauth token: https://developer.github.com/v3/oauth)
+  token: 'secret', // (github oauth token: https://developer.github.com/v3/oauth)
   label: 'commitlint',
   description: 'checking some stuff',
 };
