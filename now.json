@@ -1,0 +1,13 @@
+{
+  "alias": "commitlintbot",
+  "files": [
+  	"index.js",
+  	"server.js",
+  	"github.js",
+  	"yarn.lock",
+  	".cz-config.js",
+  	"commitlint.config.js",
+  	".gitignore",
+  	".gitattributes"
+  ]
+}
