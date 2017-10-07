@@ -4,6 +4,7 @@
   	"index.js",
   	"server.js",
   	"github.js",
+  	"lint.js",
   	"yarn.lock",
   	".cz-config.js",
   	"commitlint.config.js",

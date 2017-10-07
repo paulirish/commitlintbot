@@ -6,7 +6,7 @@ module.exports = {
     'footer-leading-blank': [1, 'always'],
     'footer-tense': [1, 'always', ['present-imperative']],
     'header-max-length': [2, 'always', 72],
-    lang: [1, 'always', 'eng'],
+    lang: [0, 'always', 'eng'],
     'scope-case': [2, 'always', 'lowerCase'],
     'scope-empty': [0, 'never'],
     'subject-empty': [0, 'never'],
