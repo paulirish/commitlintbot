@@ -1,8 +1,8 @@
 {
   "name": "commitlintbot",
-  "version": "0.0.0-semantically-released",
+  "version": "0.0.1",
   "description": "Runs commitlint against your projects PRs",
-  "main": "dist/index.js",
+  "main": "index.js",
   "engines": {
     "node": "> 4",
     "npm": "> 3"
@@ -26,20 +26,12 @@
     "promise-queue": "^2.2.3"
   },
   "devDependencies": {},
-  "eslintConfig": {
-    "extends": "./node_modules/kcd-scripts/eslint.js"
-  },
-  "eslintIgnore": [
-    "node_modules",
-    "coverage",
-    "dist"
-  ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/kentcdodds/commitlintbot.git"
+    "url": "https://github.com/paulirish/commitlintbot.git"
   },
   "bugs": {
-    "url": "https://github.com/kentcdodds/commitlintbot/issues"
+    "url": "https://github.com/paulirish/commitlintbot/issues"
   },
-  "homepage": "https://github.com/kentcdodds/commitlintbot#readme"
+  "homepage": "https://github.com/paulirish/commitlintbot#readme"
 }
