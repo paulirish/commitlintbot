@@ -2,9 +2,10 @@ const path = require('path');
 const bodyParser = require('body-parser');
 const server = require('express')();
 const Queue = require('promise-queue');
-const {version} = require('../package.json');
-const {stage, sync, github, gitlab} = require('./core');
-const log = require('./logger');
+const {version} = require('./package.json');
+const commitlintbot = require('./');
+
+const log = console;
 
 const PORT = process.env.PORT || 3000;
 const DEPLOY_DIR = path.resolve('/tmp/.stage-ci');
@@ -16,41 +17,38 @@ server.get('/', (request, response) => {
   response.json({version, queue});
 });
 
-server.post('/', (request, response) => {
+server.post('/', async (request, response) => {
   let result;
-  try {
-    const {headers, body} = request;
-    const keys = Object.keys(headers);
-    if (keys.includes('x-github-event')) result = github({headers, body});
-    if (keys.includes('x-gitlab-event')) result = gitlab({headers, body});
-  } catch (error) {
-    if (error.asJson && error.asJson.error && error.asJson.error.type === 'fatal') {
-      response.status(500).send(error.asJson);
-      return;
-    }
-  }
-  const {success, ref, sha, name, alias, cloneUrl, setStatus, deploy} = result;
+  // try {
+  //   const {headers, body} = request;
+  //   const keys = Object.keys(headers);
+  //   // if (keys.includes('x-github-event')) result = github({headers, body});
+  //   // if (keys.includes('x-gitlab-event')) result = gitlab({headers, body});
+  // } catch (error) {
+  //   if (error.asJson && error.asJson.error && error.asJson.error.type === 'fatal') {
+  //     response.status(500).send(error.asJson);
+  //     return;
+  //   }
+  // }
+
+  // const {success, ref, sha, name, alias, cloneUrl, setStatus, deploy} = result;
+  const success = true;
   response.sendStatus((success) ? 200 : 204);
   if (!success) return;
 
   queue.add(async () => {
-    log.info(`> Deploying ${name}@${ref}#${sha} to ${alias}`);
-    const localDirectory = path.join(DEPLOY_DIR, name);
+    log.info(`> Trying`);
+    // const localDirectory = path.join(DEPLOY_DIR, name);
 
     try {
-      await deploy();
-      await setStatus('pending', 'Staging...');
-      await sync(cloneUrl, localDirectory, {ref, checkout: sha});
-      await stage(localDirectory, {alias});
-      await setStatus('success', 'Deployed to Now', alias);
+      await commitlintbot();
     } catch (error) {
-      log.error(error.stack);
+      console.error(error.stack);
       if (error.response) {
-        log.error(error.response.data.message);
-        log.error(error.response.data.errors);
-        log.error(error.response.data.documentation_url);
+        console.error(error.response.data.message);
+        console.error(error.response.data.errors);
+        console.error(error.response.data.documentation_url);
       }
-      await setStatus('error', 'Error', alias);
     }
 
     log.info('> Done!');

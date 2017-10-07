@@ -8,30 +8,32 @@
     "npm": "> 3"
   },
   "scripts": {
-    "add-contributor": "kcd-scripts contributors add",
-    "build": "kcd-scripts build",
-    "lint": "kcd-scripts lint",
-    "test": "kcd-scripts test",
-    "test:update": "npm test -- --updateSnapshot --coverage",
-    "validate": "kcd-scripts validate",
-    "precommit": "kcd-scripts precommit"
+    "test": "",
+    "start": "node server.js"
   },
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "keywords": [],
   "author": "Kent C. Dodds <kent@doddsfamily.us> (http://kentcdodds.com/)",
   "license": "MIT",
   "dependencies": {
     "@commitlint/core": "^4.1.0",
+    "body-parser": "^1.18.2",
     "commitlint-config-cz": "^0.5.0",
-    "github-build": "^1.2.0"
+    "express": "^4.16.1",
+    "github-build": "^1.2.0",
+    "promise-queue": "^2.2.3"
   },
-  "devDependencies": {
-
-  },
+  "devDependencies": {},
   "eslintConfig": {
     "extends": "./node_modules/kcd-scripts/eslint.js"
   },
-  "eslintIgnore": ["node_modules", "coverage", "dist"],
+  "eslintIgnore": [
+    "node_modules",
+    "coverage",
+    "dist"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/kentcdodds/commitlintbot.git"

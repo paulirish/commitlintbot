@@ -11,14 +11,13 @@ const githubData = {
   repo: 'paulirish/lighthouse', // (author/repo)
   sha: 'ade63cf62b1c54cf6dc070a6c5db876e90bffa98', // (commit sha)
   pr: 7, // (pull request #)
-  token: 'secret', // (github oauth token: https://developer.github.com/v3/oauth)
+  token: process.ENV.GHTOKEN, // (github oauth token: https://developer.github.com/v3/oauth)
   label: 'commitlint',
-  description: 'checking some stuff',
 };
 
 const status = new CommitStatus(githubData);
 
-(async function init() {
+async function init() {
   try {
     const {statusCode, data} = await getPRTitle(githubData);
 
@@ -61,4 +60,6 @@ See commitlint rules: https://github.com/marionebl/commitlint/blob/master/docs/r
       .replace(/⚠/g, '&#x26A0;');
     return `http://unhtml.appspot.com/escape?%3Cpre%3E${encodeURIComponent(preparedString)}%3C/pre%3E${encodeURIComponent(link)}`;
   }
-})();
+}
+
+module.exports = init;
