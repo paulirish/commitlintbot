@@ -1,0 +1,43 @@
+{
+  "name": "commitlintbot",
+  "version": "0.0.0-semantically-released",
+  "description": "Runs commitlint against your projects PRs",
+  "main": "dist/index.js",
+  "engines": {
+    "node": "> 4",
+    "npm": "> 3"
+  },
+  "scripts": {
+    "add-contributor": "kcd-scripts contributors add",
+    "build": "kcd-scripts build",
+    "lint": "kcd-scripts lint",
+    "test": "kcd-scripts test",
+    "test:update": "npm test -- --updateSnapshot --coverage",
+    "validate": "kcd-scripts validate",
+    "precommit": "kcd-scripts precommit"
+  },
+  "files": ["dist"],
+  "keywords": [],
+  "author": "Kent C. Dodds <kent@doddsfamily.us> (http://kentcdodds.com/)",
+  "license": "MIT",
+  "dependencies": {
+    "@commitlint/core": "^4.1.0",
+    "commitlint-config-cz": "^0.5.0",
+    "github-build": "^1.2.0"
+  },
+  "devDependencies": {
+
+  },
+  "eslintConfig": {
+    "extends": "./node_modules/kcd-scripts/eslint.js"
+  },
+  "eslintIgnore": ["node_modules", "coverage", "dist"],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kentcdodds/commitlintbot.git"
+  },
+  "bugs": {
+    "url": "https://github.com/kentcdodds/commitlintbot/issues"
+  },
+  "homepage": "https://github.com/kentcdodds/commitlintbot#readme"
+}
