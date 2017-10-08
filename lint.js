@@ -13,7 +13,7 @@ async function lint(prTitle) {
 
 module.exports = lint;
 
-if (process.argv) {
+if (process.argv.length > 2) {
   (async function() {
 		const {report} = await lint(process.argv[2]);
 		process.stdout.write(report.join('\n') + '\n');
