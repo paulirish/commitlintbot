@@ -1,4 +1,3 @@
-const path = require('path');
 const bodyParser = require('body-parser');
 const server = require('express')();
 const Queue = require('promise-queue');
@@ -8,9 +7,9 @@ const commitlintbot = require('./');
 const log = console;
 
 const PORT = process.env.PORT || 3000;
-const DEPLOY_DIR = path.resolve('/tmp/.stage-ci');
 const queue = new Queue(1, process.env.STAGE_CI_MAX_QUEUE || 100);
 
+// github's webhook MUST use `application/json`
 server.use(bodyParser.json());
 
 server.get('/', (request, response) => {
@@ -19,29 +18,28 @@ server.get('/', (request, response) => {
 
 server.post('/', async (request, response) => {
   let result;
-  // try {
-  //   const {headers, body} = request;
-  //   const keys = Object.keys(headers);
-  //   // if (keys.includes('x-github-event')) result = github({headers, body});
-  //   // if (keys.includes('x-gitlab-event')) result = gitlab({headers, body});
-  // } catch (error) {
-  //   if (error.asJson && error.asJson.error && error.asJson.error.type === 'fatal') {
-  //     response.status(500).send(error.asJson);
-  //     return;
-  //   }
-  // }
+  try {
+    const {headers, body} = request;
+    if (headers['x-github-event'] !== 'pull_request') {
+      throw new Error('Unexpected non-pull_request webhook');
+    }
+    // pull out required info
+    result = {
+      repo: body.repository.full_name,
+      sha: body.pull_request.head.sha,
+      pr: body.number
+    };
+  } catch (error) {
+    console.error(error);
+    return response.status(500).send(error);
+  }
 
-  // const {success, ref, sha, name, alias, cloneUrl, setStatus, deploy} = result;
-  const success = true;
-  response.sendStatus((success) ? 200 : 204);
-  if (!success) return;
+  response.sendStatus(200);
 
   queue.add(async () => {
-    log.info(`> Trying`);
-    // const localDirectory = path.join(DEPLOY_DIR, name);
-
+    log.info(`> Calling commitlint bot with received webhook data`);
     try {
-      await commitlintbot();
+      await commitlintbot(result);
     } catch (error) {
       console.error(error.stack);
       if (error.response) {

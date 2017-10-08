@@ -14,7 +14,7 @@ module.exports = {
     'subject-tense': [1, 'always', ['present-imperative']],
     'type-case': [2, 'always', 'lowerCase'],
     'type-empty': [2, 'never'],
-    // scope-enum :  defined in the cz-config
-    // 'type-enum':  defined in the cz-config
+    // The scope-enum :  defined in the cz-config
+    // The 'type-enum':  defined in the cz-config
   },
 }
