@@ -20,54 +20,36 @@
 [![Star on GitHub][github-star-badge]][github-star]
 [![Tweet][twitter-badge]][twitter]
 
+<img width="528" align="right" alt="screen shot 2017-10-07 at 4 50 48 pm" src="https://user-images.githubusercontent.com/39191/31313114-5967e096-ab8d-11e7-98b5-6bae28da0a94.png">
+
+
 ## The problem
 
-// TODO
+You use conventional-changelog, but you squash PRs. So you want PR titles to match the same semantics as your conventional changelog requirements.
 
 ## This solution
 
-// TODO
-
-## Table of Contents
-
-<!-- START doctoc generated TOC please keep comment here to allow auto update -->
-<!-- DON'T EDIT THIS SECTION. It'll update automatically -->
-
-- [Installation](#installation)
-- [Usage](#usage)
-- [Props](#props)
-- [Control Props](#control-props)
-- [Child Callback Function](#child-callback-function)
-- [Examples](#examples)
-- [FAQ](#faq)
-- [Inspiration](#inspiration)
-- [Other Solutions](#other-solutions)
-- [Contributors](#contributors)
-- [LICENSE](#license)
-
-<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+commitlintbot is a bot on now.sh that can receive github webhooks and post a commit status reporting on if the current PR title hits the requirements of the config.
 
 ## Installation
 
-This module is distributed via [npm][npm] which is bundled with [node][node] and
-should be installed as one of your project's `dependencies`:
+* Setup webhook.
+  * `https://commitlintbot.now.sh`
+  * `application/json`
+  * Secret... not implemented. :|
+  * Choose individual events: `Pull request`
+  * Add.
+* If you want to use this in an organization and the org has fairly locked down permissions, org owners will need to approve the use of the app (via OAuth client_id): https://github.com/settings/connections/applications/e3737bbd21bc66fb0a18
 
-```
-npm install --save commitlintbot
-```
+Now, things should be pretty automatic.
 
-## Usage
+## TODO
 
-// TODO
+* Right now the `commitlint` config is pretty hard-coded to Lighthouse's setup. In the future, the bot should understand what the config is off the repo that's using it.
+* Right now the bot is authenticated with `paulirish`'s abilities. That means it probably can't update your repo. :) If you want to run your own.. just deploy to `now` with `now -e GHTOKEN=yourgithubpersonalaccesstoken`.
+* Probably some other stuff...
 
-## Inspiration
 
-// TODO
-
-## Other Solutions
-
-I'm not aware of any, if you are please [make a pull request][prs] and add it
-here!
 
 ## LICENSE
 

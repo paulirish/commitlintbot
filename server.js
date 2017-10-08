@@ -39,14 +39,10 @@ server.post('/', async (request, response) => {
   queue.add(async () => {
     log.info(`> Calling commitlint bot with received webhook data`);
     try {
-      await commitlintbot(result);
+      const {status, data} = await commitlintbot(result);
+      console.log('From build status API: ', {status, data});
     } catch (error) {
-      console.error(error.stack);
-      if (error.response) {
-        console.error(error.response.data.message);
-        console.error(error.response.data.errors);
-        console.error(error.response.data.documentation_url);
-      }
+      console.error(error);
     }
 
     log.info('> Done!');
