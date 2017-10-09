@@ -9,6 +9,7 @@ module.exports = {
     lang: [0, 'always', 'eng'],
     'scope-case': [2, 'always', 'lowerCase'],
     'scope-empty': [0, 'never'],
+    'subject-case': [1, 'always', 'lowerCase' ],
     'subject-empty': [0, 'never'],
     'subject-full-stop': [2, 'never', '.'],
     'subject-tense': [1, 'always', ['present-imperative']],
