@@ -40,7 +40,7 @@ server.post('/', async (request, response) => {
     log.info(`> Calling commitlint bot with received webhook data`);
     try {
       const {status, data} = await commitlintbot(result);
-      console.log('From build status API: ', {status, data});
+      console.log(`Setting Github build status API...: ${status}`);
     } catch (error) {
       console.error(error);
     }

@@ -26,7 +26,7 @@ async function init(prData) {
     console.log(`Evaluating: ${prTitle}`);
     const {report} = await lint(prTitle);
 
-    const flatReport = report.join('. ').slice(0, MAXIMUM_STATUS_LENGTH);
+    const flatReport = report.join('. ');
 
     // Set status to passing
     if (flatReport.includes('found 0 problems')) {
@@ -37,7 +37,7 @@ async function init(prData) {
     // Set status to failing
     console.log(`Setting ${githubData.repo} PR ${githubData.pr} to failing.`);
     console.log(flatReport);
-    return status.fail(flatReport, generateURL(prTitle, report));
+    return status.fail(flatReport.slice(0, MAXIMUM_STATUS_LENGTH), generateURL(prTitle, report));
   } catch (e) {
     console.error(e);
     // Set status to error
