@@ -25,11 +25,15 @@
 
 ## The problem
 
-You use conventional-changelog, but you squash PRs. So you want PR titles to match the same semantics as your conventional changelog requirements.
+You use [conventional-changelog](http://conventionalcommits.org/), but you squash pull requests (PRs). So you want PR titles to match the same semantics as your conventional changelog requirements.
 
 ## This solution
 
-commitlintbot is a bot on now.sh that can receive github webhooks and post a commit status reporting on if the current PR title hits the requirements of the config.
+commitlintbot is a bot that will update your pull request's commit status based on your PR's title satisfying the requirements of your conventional-changelog configuration.  It runs on now.sh, and receives github webhooks and updates a commit status via the Github API. 
+
+
+![image](https://user-images.githubusercontent.com/39191/31453450-16c1c202-ae67-11e7-8b9f-5d7b1d553b2b.png)
+![image](https://user-images.githubusercontent.com/39191/31453417-f6da45ae-ae66-11e7-9727-24c69d2fc03b.png)
 
 ## Installation
 
