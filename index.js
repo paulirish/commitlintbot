@@ -59,7 +59,7 @@ See commitlint rules: https://github.com/marionebl/commitlint/blob/master/docs/r
       .replace(/✖/g, '&#x2716;')
       .replace(/✔/g, '&#x2714;')
       .replace(/⚠/g, '&#x26A0;');
-    return `http://unhtml.appspot.com/escape?%3Cpre%3E${encodeURIComponent(
+    return `https://unhtml.appspot.com/escape?%3Cpre%3E${encodeURIComponent(
       preparedString
     )}%3C/pre%3E${encodeURIComponent(link)}`;
   }
