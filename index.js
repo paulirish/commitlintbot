@@ -2,7 +2,9 @@ const fs = require('fs');
 const CommitStatus = require('github-build');
 
 const Raven = require('raven');
-Raven.config('https://7b0de65a1e1f43a1bfc3ff0048b3a0eb:1491617418f048cdb1da1b9179575fbc@sentry.io/235838').install();
+Raven.config(
+  'https://7b0de65a1e1f43a1bfc3ff0048b3a0eb:1491617418f048cdb1da1b9179575fbc@sentry.io/235838'
+).install();
 
 const requireFromString = require('require-from-string');
 const {getPRTitle, getFileContents} = require('./github');
@@ -29,7 +31,7 @@ async function init(prData) {
     const apiFetches = [
       getPRTitle(githubData),
       getFileContents(githubData, clintConfigFilename),
-      getFileContents(githubData, czConfigFilename),
+      getFileContents(githubData, czConfigFilename)
     ];
     const [title, clintConfigContent, czConfigContent] = await Promise.all(apiFetches);
 
@@ -50,19 +52,18 @@ async function init(prData) {
     // Set status to passing
     if (reportObj.valid === true) {
       console.log(`Setting ${githubData.repo} PR ${githubData.pr} to passing.`);
-      return status.pass('PR title is good to go, boss', generateURL(title, report)).catch(handleCommitStatusFailure)
+      return status
+        .pass('PR title is good to go, boss', generateURL(title, report))
+        .catch(handleCommitStatusFailure);
     }
 
     // Set status to failing
     console.log(`Setting ${githubData.repo} PR ${githubData.pr} to failing.`);
     console.log(flatReport);
     const failureMsg = flatReport.slice(0, MAXIMUM_STATUS_LENGTH);
-    return status.fail(failureMsg, generateURL(title, report)).catch(handleCommitStatusFailure)
+    return status.fail(failureMsg, generateURL(title, report)).catch(handleCommitStatusFailure);
   } catch (e) {
     console.error('runtime failure', e);
-    if (e.status && e.error) {
-      e = new Error(`github-build`)
-    }
     Raven.captureException(e);
     // Set status to error
     return status.error(e).catch(handleCommitStatusFailure);
