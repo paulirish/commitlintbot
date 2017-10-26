@@ -21,11 +21,16 @@ function api(data, repo, suffix) {
     });
 }
 
-const getPRTitle = data => api(data, data.repo, `pulls/${data.pr}`);
+const getPRTitle = async data => {
+  const payload = await api(data, data.repo, `pulls/${data.pr}`);
+  return payload.title;
+};
 
 const getFileContents = async (data, path) => {
-  const payload = await api(data, data.srcRepo, `contents/${path}?ref=${data.sha}`);
-  return Buffer.from(payload.content, 'base64').toString('utf8');
+  const payload = await api(data, data.srcRepo, `contents/${path}?ref=${data.sha}`).catch(err =>
+    console.warn('getFileContents', err.status, path)
+  );
+  return payload ? Buffer.from(payload.content, 'base64').toString('utf8') : undefined;
 };
 
 module.exports = {

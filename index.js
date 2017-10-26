@@ -22,24 +22,22 @@ async function init(prData) {
     status = new CommitStatus(githubData);
 
     const lintOpts = {};
-    try {
-      const czConfigContent = await getFileContents(githubData, czConfigFilename);
+
+    const apiFetches = [
+      getPRTitle(githubData),
+      getFileContents(githubData, clintConfigFilename),
+      getFileContents(githubData, czConfigFilename),
+    ];
+    const [title, clintConfigContent, czConfigContent] = await Promise.all(apiFetches);
+
+    if (clintConfigContent) {
+      lintOpts.clintConfig = requireFromString(clintConfigContent);
+    }
+    if (czConfigContent) {
       fs.writeFileSync(`${czConfigFilename}`, czConfigContent);
       lintOpts.cz = true;
-    } catch (e) {
-      console.log('No custom .cz-config found. No prob.');
     }
 
-    try {
-      const clintConfigContent = await getFileContents(githubData, clintConfigFilename);
-      lintOpts.clintConfig = requireFromString(clintConfigContent);
-    } catch (e) {
-      console.log('No custom commitlint.config.js found. No prob.');
-    }
-
-    const {title} = await getPRTitle(githubData);
-
-    console.log(`Evaluating: ${title}`);
     const {report, reportObj} = await lint(title, lintOpts);
 
     if (fs.existsSync(`${czConfigFilename}`)) fs.unlinkSync(`${czConfigFilename}`);

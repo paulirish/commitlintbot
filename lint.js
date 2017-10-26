@@ -2,6 +2,8 @@ const commitlint = require('@commitlint/core');
 const defaultClintConfig = require('./default-commitlint.config');
 
 async function lint(prTitle, lintOpts = {}) {
+  console.log(`Linting: ${prTitle}`);
+
   // use provided commitlint.config or fallback to our local preset
   const baseConfig = lintOpts.clintConfig || defaultClintConfig;
   baseConfig.extends = baseConfig.extends || [];
@@ -18,6 +20,7 @@ async function lint(prTitle, lintOpts = {}) {
 
 module.exports = lint;
 
+// run via node lint.js "feat: awesome feature"
 if (process.argv.length > 2) {
   (async function() {
     const {report} = await lint(process.argv[2]);
