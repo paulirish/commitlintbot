@@ -7,12 +7,14 @@ Raven.config(
 ).install();
 
 const requireFromString = require('require-from-string');
+const lhClintConfig = require('./lighthouse.commitlint.config');
 const {getPRTitle, getFileContents} = require('./github');
 
 const lint = require('./lint');
 
 const MAXIMUM_STATUS_LENGTH = 140;
-const czConfigFilename = `${__dirname}/.cz-config.js`;
+const czConfigFilename = `.cz-config.js`;
+const czConfigPath = `${__dirname}/${czConfigFilename}`;
 const clintConfigFilename = 'commitlint.config.js';
 
 const baseGithubData = {
@@ -37,15 +39,22 @@ async function init(prData) {
 
     if (clintConfigContent) {
       lintOpts.clintConfig = requireFromString(clintConfigContent);
+      // FIXME: remove this hack for backwards compatibility
+    } else if (githubData.repo.includes('lighthouse')) {
+      lintOpts.clintConfig = lhClintConfig;
     }
-    if (czConfigContent) {
-      fs.writeFileSync(`${czConfigFilename}`, czConfigContent);
+
+    // FIXME: can't write to disk on now.sh. will have to find a workaround.
+    if (false && czConfigContent) {
+      // unfortunately this file needs to be read off of disk
+      fs.writeFileSync(czConfigPath, czConfigContent);
       lintOpts.cz = true;
     }
 
     const {report, reportObj} = await lint(title, lintOpts);
 
-    if (fs.existsSync(`${czConfigFilename}`)) fs.unlinkSync(`${czConfigFilename}`);
+    // FIXME this too.
+    if (false && fs.existsSync(czConfigPath)) fs.unlinkSync(czConfigPath);
 
     const flatReport = report.join('. ');
 

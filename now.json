@@ -5,9 +5,10 @@
   	"server.js",
   	"github.js",
   	"lint.js",
+  	"default-commitlint.config.js",
+		"lighthouse.commitlint.config.js",
+		".cz-config.js",
   	"yarn.lock",
-  	".cz-config.js",
-  	"commitlint.config.js",
   	".gitignore",
   	".gitattributes"
   ]
