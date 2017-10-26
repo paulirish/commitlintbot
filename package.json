@@ -8,7 +8,7 @@
     "npm": "> 3"
   },
   "scripts": {
-    "test": "",
+    "test": "jest",
     "start": "node --trace-warnings server.js"
   },
   "files": [
@@ -26,7 +26,9 @@
     "promise-queue": "^2.2.3",
     "require-from-string": "^2.0.1"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "jest-cli": "^21.2.1"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/paulirish/commitlintbot.git"
