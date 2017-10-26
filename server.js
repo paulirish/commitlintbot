@@ -22,7 +22,7 @@ server.post('/', async (request, response) => {
     const {headers, body} = request;
 
     if (!body.repository) {
-      console.log(body);
+      console.log('body', body);
       throw new Error('Missing repository metadata.')
     }
 
@@ -46,7 +46,8 @@ server.post('/', async (request, response) => {
       pr: body.number
     };
   } catch (error) {
-    console.error(error);
+    console.error('early server caught error', error);
+    Raven.captureException(error);
     return response.status(500).send(error);
   }
 
@@ -58,7 +59,8 @@ server.post('/', async (request, response) => {
       const {status, data} = await commitlintbot(result);
       console.log(`Setting Github build status API...: ${status}`);
     } catch (error) {
-      console.error(error, error.stack);
+      Raven.captureException(error);
+      console.error('server caught error', error, error.stack);
     }
 
     log.info('> Done!');

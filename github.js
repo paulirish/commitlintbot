@@ -16,14 +16,17 @@ function api(data, repo, suffix) {
 
       return Promise.reject({
         status: response.status,
-        error: response.data
+        error: response.data || {}
       });
     });
 }
 
 const getPRTitle = async data => {
-  const payload = await api(data, data.repo, `pulls/${data.pr}`);
-  return payload.title;
+  const payload = await api(data, data.repo, `pulls/${data.pr}`).catch(err => {
+    console.warn('getPRTItle', err.status);
+    throw new Error(`Failed to fetch title from Github API: ${err.status} ${err.error.message} ${err.error.documentation_url}`)
+  });
+  return payload && payload.title;
 };
 
 const getFileContents = async (data, path) => {
