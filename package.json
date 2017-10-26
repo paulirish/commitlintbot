@@ -24,6 +24,7 @@
     "express": "^4.14.0",
     "github-build": "^1.2.0",
     "promise-queue": "^2.2.3",
+    "raven": "^2.2.1",
     "require-from-string": "^2.0.1"
   },
   "devDependencies": {
