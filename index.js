@@ -1,18 +1,18 @@
+const fs = require('fs');
 const CommitStatus = require('github-build');
 
-const {getPRTitle} = require('./github');
+const requireFromString = require('require-from-string');
+const {getPRTitle, getFileContents} = require('./github');
+
 const lint = require('./lint');
 
 const MAXIMUM_STATUS_LENGTH = 140;
+const czConfigFilename = `${__dirname}/.cz-config.js`;
+const clintConfigFilename = 'commitlint.config.js';
 
 const baseGithubData = {
   token: process.env.GHTOKEN, // (github oauth token: https://developer.github.com/v3/oauth)
-  label: 'commitlint',
-
-  // defaults for testing
-  repo: 'paulirish/lighthouse', // (author/repo)
-  sha: 'ade63cf62b1c54cf6dc070a6c5db876e90bffa98', // (commit sha)
-  pr: 7 // (pull request #)
+  label: 'commitlint'
 };
 
 async function init(prData) {
@@ -20,24 +20,42 @@ async function init(prData) {
   try {
     const githubData = Object.assign({}, baseGithubData, prData);
     status = new CommitStatus(githubData);
-    const {data} = await getPRTitle(githubData);
 
-    const prTitle = data.title;
-    console.log(`Evaluating: ${prTitle}`);
-    const {report} = await lint(prTitle);
+    const lintOpts = {};
+    try {
+      const czConfigContent = await getFileContents(githubData, czConfigFilename);
+      fs.writeFileSync(`${czConfigFilename}`, czConfigContent);
+      lintOpts.cz = true;
+    } catch (e) {
+      console.log('No custom .cz-config found. No prob.');
+    }
+
+    try {
+      const clintConfigContent = await getFileContents(githubData, clintConfigFilename);
+      lintOpts.clintConfig = requireFromString(clintConfigContent);
+    } catch (e) {
+      console.log('No custom commitlint.config.js found. No prob.');
+    }
+
+    const {title} = await getPRTitle(githubData);
+
+    console.log(`Evaluating: ${title}`);
+    const {report, reportObj} = await lint(title, lintOpts);
+
+    if (fs.existsSync(`${czConfigFilename}`)) fs.unlinkSync(`${czConfigFilename}`);
 
     const flatReport = report.join('. ');
 
     // Set status to passing
-    if (flatReport.includes('found 0 problems')) {
+    if (reportObj.valid === true) {
       console.log(`Setting ${githubData.repo} PR ${githubData.pr} to passing.`);
-      return status.pass('PR title is good to go, boss', generateURL(prTitle, report));
+      return status.pass('PR title is good to go, boss', generateURL(title, report));
     }
 
     // Set status to failing
     console.log(`Setting ${githubData.repo} PR ${githubData.pr} to failing.`);
     console.log(flatReport);
-    return status.fail(flatReport.slice(0, MAXIMUM_STATUS_LENGTH), generateURL(prTitle, report));
+    return status.fail(flatReport.slice(0, MAXIMUM_STATUS_LENGTH), generateURL(title, report));
   } catch (e) {
     console.error(e);
     // Set status to error

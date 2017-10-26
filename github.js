@@ -1,19 +1,34 @@
 const axios = require('axios');
 
-function getPRTitle(data) {
+function api(data, repo, suffix) {
+  const url = `https://api.github.com/repos/${repo}/${suffix}`;
+  console.log('API: ', url);
+
   return axios({
     method: 'GET',
-    url: `https://api.github.com/repos/${data.repo}/pulls/${data.pr}`,
+    url: url,
     responseType: 'json',
     headers: {Authorization: `token ${data.token}`}
-  }).catch(e => {
-    const response = e.response || {status: 500};
+  })
+    .then(ret => ret.data)
+    .catch(e => {
+      const response = e.response || {status: 500};
 
-    return Promise.reject({
-      status: response.status,
-      error: response.data
+      return Promise.reject({
+        status: response.status,
+        error: response.data
+      });
     });
-  });
 }
 
-module.exports.getPRTitle = getPRTitle;
+const getPRTitle = data => api(data, data.repo, `pulls/${data.pr}`);
+
+const getFileContents = async (data, path) => {
+  const payload = await api(data, data.srcRepo, `contents/${path}?ref=${data.sha}`);
+  return Buffer.from(payload.content, 'base64').toString('utf8');
+};
+
+module.exports = {
+  getPRTitle: getPRTitle,
+  getFileContents: getFileContents
+};

@@ -1,10 +1,16 @@
 const commitlint = require('@commitlint/core');
+const defaultClintConfig = require('./default-commitlint.config');
 
-async function lint(prTitle) {
-  const opts = await commitlint.load({
-    extends: ['./commitlint.config.js']
-  });
+async function lint(prTitle, lintOpts = {}) {
+  // use provided commitlint.config or fallback to our local preset
+  const baseConfig = lintOpts.clintConfig || defaultClintConfig;
+  baseConfig.extends = baseConfig.extends || [];
+  // if we find a .cz-config then we'll extend to use it
+  if (lintOpts.cz && !baseConfig.extends.includes('cz')) {
+    baseConfig.extends.push('cz');
+  }
 
+  const opts = await commitlint.load(baseConfig);
   const reportObj = await commitlint.lint(prTitle, opts.rules);
   const report = await commitlint.format(reportObj, {color: false});
   return {reportObj, report};

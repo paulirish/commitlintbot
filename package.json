@@ -19,13 +19,12 @@
   "license": "MIT",
   "dependencies": {
     "@commitlint/core": "^4.1.0",
-    "commitlint-config-cz": "^0.5.0",
-
     "body-parser": "^1.15.2",
+    "commitlint-config-cz": "^0.5.0",
     "express": "^4.14.0",
+    "github-build": "^1.2.0",
     "promise-queue": "^2.2.3",
-
-    "github-build": "^1.2.0"
+    "require-from-string": "^2.0.1"
   },
   "devDependencies": {},
   "repository": {

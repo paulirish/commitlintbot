@@ -29,11 +29,18 @@ You use [conventional-changelog](http://conventionalcommits.org/), but you squas
 
 ## This solution
 
-commitlintbot is a bot that will update your pull request's commit status based on your PR's title satisfying the requirements of your conventional-changelog configuration.  It runs on now.sh, and receives github webhooks and updates a commit status via the Github API. 
+commitlintbot is a bot that will update your pull request's commit status based on your PR's title satisfying the requirements of your conventional-changelog configuration.  It runs on now.sh, and receives github webhooks and updates a commit status via the Github API.
 
 
 ![image](https://user-images.githubusercontent.com/39191/31453450-16c1c202-ae67-11e7-8b9f-5d7b1d553b2b.png)
 ![image](https://user-images.githubusercontent.com/39191/31453417-f6da45ae-ae66-11e7-9727-24c69d2fc03b.png)
+
+
+## Configuration
+* A [default commitlint config](./default-commitlint.config.js) will be applied.
+   * However if you have a `commitlint.config.js` in the root of the repo, that will be used instead. The other config formats are not supported.
+* Additionally, if you have a `.cz-config.js` in the root of your repo, that will be used to enforce your custom scopes & types.
+
 
 ## Installation
 
@@ -47,11 +54,10 @@ commitlintbot is a bot that will update your pull request's commit status based 
 
 Now, things should be pretty automatic.
 
-## TODO
+## Also
 
-* Right now the `commitlint` config is pretty hard-coded to Lighthouse's setup. In the future, the bot should understand what the config is off the repo that's using it.
-* Right now the bot is authenticated with `paulirish`'s abilities. That means it probably can't update your repo. :) If you want to run your own.. just deploy to `now` with `now -e GHTOKEN=yourgithubpersonalaccesstoken`.
-* Probably some other stuff...
+* If you want to run your own.. just deploy to `now` with `now -e GHTOKEN=yourgithubpersonalaccesstoken`.
+
 
 
 
