@@ -4,6 +4,8 @@ const Queue = require('promise-queue');
 const {version} = require('./package.json');
 const commitlintbot = require('./');
 
+const Raven = require('raven');
+
 const log = console;
 
 const PORT = process.env.PORT || 3000;
@@ -23,6 +25,7 @@ server.post('/', async (request, response) => {
 
     if (!body.repository) {
       console.log('body', body);
+      console.log('headers', headers);
       throw new Error('Missing repository metadata.')
     }
 
