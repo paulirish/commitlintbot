@@ -66,19 +66,19 @@ async function init(prData) {
 
     // Set status to passing
     if (reportObj.valid === true) {
-      console.log(`Setting ${githubData.repo} PR ${githubData.pr} to passing.`);
+      console.log(`> 🖋✅ Setting status: _passing_ (https://github.com/${githubData.repo}/pull/${githubData.pr})`);
       return status
         .pass('PR title is good to go, boss', generateURL(title, report))
         .catch(handleCommitStatusFailure);
     }
 
     // Set status to failing
-    console.log(`Setting ${githubData.repo} PR ${githubData.pr} to failing.`);
+    console.log(`> 🖋❌ Setting status: _failing_ (https://github.com/${githubData.repo}/pull/${githubData.pr})`);
     console.log(flatReport);
     const failureMsg = flatReport.slice(0, MAXIMUM_STATUS_LENGTH);
     return status.fail(failureMsg, generateURL(title, report)).catch(handleCommitStatusFailure);
   } catch (e) {
-    console.error('runtime failure', e);
+    console.error('⚠️ Runtime failure', e);
     Raven.captureException(e);
     // Set status to error
     return status.error(e).catch(handleCommitStatusFailure);

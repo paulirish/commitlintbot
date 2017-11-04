@@ -2,7 +2,7 @@ const axios = require('axios');
 
 function api(data, repo, suffix) {
   const url = `https://api.github.com/repos/${repo}/${suffix}`;
-  console.log('API: ', url);
+  console.log('>> GH API: ', url);
 
   return axios({
     method: 'GET',

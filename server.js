@@ -48,7 +48,7 @@ server.post('/', async (request, response) => {
       pr: body.number
     };
   } catch (error) {
-    console.error('early server caught error', error);
+    console.error('⚠️ early server caught error', error);
     Raven.captureException(error);
     return response.status(500).send(error);
   }
@@ -62,13 +62,12 @@ server.post('/', async (request, response) => {
         if (status === 404) return response.status(403).send('Organization permissions for commitlintbot not Allowed. See https://github.com/paulirish/commitlintbot#installation ');
         return response.status(403).send(data.error);
       }
-      // Successful bot run
-      response.sendStatus(200);
-      console.log(`Succcessfully set Github build status API...: ${status}`);
+      response.status(200).send('Successful commitlintbot run');
+      console.log(`> Succcessful commitlint bot run. (GH Status API statuscode: ${status})`);
     } catch (error) {
       response.status(500).send(error);
       Raven.captureException(error);
-      console.error('server caught error', error, error.stack);
+      console.error('⚠️ server caught error', error, error.stack);
     }
     log.info('> Done!');
   });

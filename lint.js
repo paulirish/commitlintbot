@@ -2,7 +2,7 @@ const commitlint = require('@commitlint/core');
 const defaultClintConfig = require('./default-commitlint.config');
 
 async function lint(prTitle, lintOpts = {}) {
-  console.log(`Linting: ${prTitle}`);
+  console.log(`> Linting: ${prTitle}`);
 
   // use provided commitlint.config or fallback to our local preset
   const baseConfig = lintOpts.clintConfig || defaultClintConfig;
