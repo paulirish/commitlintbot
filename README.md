@@ -20,7 +20,7 @@
 [![Star on GitHub][github-star-badge]][github-star]
 [![Tweet][twitter-badge]][twitter]
 
-<img width="528" align="right" alt="screen shot 2017-10-07 at 4 50 48 pm" src="https://user-images.githubusercontent.com/39191/31313114-5967e096-ab8d-11e7-98b5-6bae28da0a94.png">
+<img width="300" align="right" alt="screen shot 2017-10-07 at 4 50 48 pm" src="https://user-images.githubusercontent.com/39191/31313114-5967e096-ab8d-11e7-98b5-6bae28da0a94.png">
 
 
 ## The problem
