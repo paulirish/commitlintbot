@@ -53,18 +53,23 @@ server.post('/', async (request, response) => {
     return response.status(500).send(error);
   }
 
-  response.sendStatus(200);
-
   queue.add(async () => {
     log.info(`> Calling commitlint bot with received webhook data`);
     try {
       const {status, data} = await commitlintbot(result);
-      console.log(`Setting Github build status API...: ${status}`);
+      // Some status API call failure
+      if (data.error) {
+        if (status === 404) return response.status(403).send('Organization permissions for commitlintbot not Allowed. See https://github.com/paulirish/commitlintbot#installation ');
+        return response.status(403).send(data.error);
+      }
+      // Successful bot run
+      response.sendStatus(200);
+      console.log(`Succcessfully set Github build status API...: ${status}`);
     } catch (error) {
+      response.status(500).send(error);
       Raven.captureException(error);
       console.error('server caught error', error, error.stack);
     }
-
     log.info('> Done!');
   });
 });

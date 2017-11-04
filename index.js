@@ -27,6 +27,7 @@ async function init(prData) {
   try {
     const githubData = Object.assign({}, baseGithubData, prData);
     status = new CommitStatus(githubData);
+    await status.start('Linting the pull request title...').catch(handleCommitStatusFailure);
 
     const lintOpts = {};
 
@@ -83,6 +84,11 @@ async function init(prData) {
     return status.error(e).catch(handleCommitStatusFailure);
   }
 
+  function handleCommitStatusFailure({status, error}) {
+    console.warn('Failed to set commit status API via github-build', status, error);
+    return {status, data: {error}};
+  }
+
   function generateURL(prTitle, reportArr) {
     const titlePrefix = `Commit message:
 > ${prTitle}
@@ -102,10 +108,6 @@ See commitlint rules: https://github.com/marionebl/commitlint/blob/master/docs/r
       preparedString
     )}%3C/pre%3E${encodeURIComponent(link)}`;
   }
-}
-
-function handleCommitStatusFailure(error) {
-  console.warn('Failed to set commit status API via github-build', error);
 }
 
 module.exports = init;
