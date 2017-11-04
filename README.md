@@ -67,7 +67,7 @@ MIT
 
 [npm]: https://www.npmjs.com/
 [node]: https://nodejs.org
-[build-badge]: https://img.shields.io/travis/paulirish/commitlintbot.svg?style=flat-square
+[build-badge]: https://img.shields.io/travis/paulirish/commitlintbot/master.svg?style=flat-square
 [build]: https://travis-ci.org/paulirish/commitlintbot
 [coverage-badge]: https://img.shields.io/codecov/c/github/paulirish/commitlintbot.svg?style=flat-square
 [coverage]: https://codecov.io/github/paulirish/commitlintbot
