@@ -23,6 +23,11 @@ server.post('/', async (request, response) => {
   try {
     const {headers, body} = request;
 
+    if (!headers['x-github-event']) {
+      console.log('headers of non x-github-event POST', headers);
+      return response.sendStatus(403);
+    }
+
     if (!body.repository) {
       console.log('body', body);
       console.log('headers', headers);
