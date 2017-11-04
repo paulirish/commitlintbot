@@ -7,7 +7,7 @@
 <hr />
 
 [![Build Status][build-badge]][build]
-[![Code Coverage][coverage-badge]][coverage]
+<!-- [![Code Coverage][coverage-badge]][coverage] -->
 [![version][version-badge]][package]
 [![downloads][downloads-badge]][npmtrends]
 [![MIT License][license-badge]][LICENSE]
@@ -38,7 +38,7 @@ commitlintbot is a bot that will update your pull request's commit status based 
 
 ## Configuration
 * A [default commitlint config](./default-commitlint.config.js) will be applied.
-   * However if you have a `commitlint.config.js` in the root of the repo, that will be used instead. The other config formats (.commitlintrc.js, .commitlintrc.json, .commitlintrc.yml) are **not** supported.
+   - However if you have a `commitlint.config.js` in the root of the repo, that will be used instead. The other config formats (.commitlintrc.js, .commitlintrc.json, .commitlintrc.yml) are **not** supported.
 * ~Additionally, if you have a `.cz-config.js` in the root of your repo, that will be used to enforce your custom scopes & types.~ This is [broken](https://github.com/whizark/commitlint-config-cz/issues/2) ATM. <3
 
 
