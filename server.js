@@ -23,28 +23,22 @@ server.post('/', async (request, response) => {
   try {
     const {headers, body} = request;
 
-    if (!headers['x-github-event']) {
-      console.log('headers of non x-github-event POST', headers);
-      return response.sendStatus(403);
-    }
+    const xGithubEvent = headers['x-github-event'];
+    const contentType = headers['content-type'];
+
+    if (contentType !== 'application/json') return response.status(400).send('Must set content type to `application/json`');
+    if (!xGithubEvent) return response.status(403).send('Not a x-github-event POST');
+
+    console.log('\n\n> Received webhook: ', body.repository.full_name, xGithubEvent);
+    // 'ping' sent when a repo first registers the webhook
+    if (xGithubEvent === 'ping') return response.sendStatus(200);
+    if (xGithubEvent !== 'pull_request') return response.status(400).send('Unexpected non-pull_request webhook');
 
     if (!body.repository) {
       console.log('body', body);
       console.log('headers', headers);
-      throw new Error('Missing repository metadata.')
+      throw new Error('Missing repository metadata.');
     }
-
-    console.log('Received webhook: ', body.repository.full_name, headers['x-github-event']);
-
-    // send when a repo first registers the webhook
-    if (headers['x-github-event'] === 'ping') {
-      return response.sendStatus(200);
-    }
-    if (headers['x-github-event'] !== 'pull_request') {
-      console.error(body.repository.full_name, 'x-github-event', headers['x-github-event']);
-      throw new Error(`Unexpected non-pull_request webhook`);
-    }
-
 
     // pull out required info
     result = {
