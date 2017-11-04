@@ -45,10 +45,15 @@ async function init(prData) {
     }
 
     // FIXME: can't write to disk on now.sh. will have to find a workaround.
+    // https://github.com/paulirish/commitlintbot/issues/3
     if (false && czConfigContent) {
       // unfortunately this file needs to be read off of disk
       fs.writeFileSync(czConfigPath, czConfigContent);
       lintOpts.cz = true;
+    }
+    // FIXME: currently have to ignore extends:['cz'] in the config.
+    if (!githubData.repo.includes('lighthouse')) {
+      lintOpts.clintConfig.extends = lintOpts.clintConfig.extends.filter(e => e !== 'cz');
     }
 
     const {report, reportObj} = await lint(title, lintOpts);
