@@ -54,6 +54,13 @@ commitlintbot is a bot that will update your pull request's commit status based 
 
 Now, things should be pretty automatic.
 
+## Troubleshooting
+
+The responses of the webhook should be minimally helpful:
+
+![image](https://user-images.githubusercontent.com/39191/32409650-fcadd22a-c16c-11e7-8742-ac0b62cb5a35.png)
+
+
 ## Also
 
 * If you want to run your own.. just deploy to `now` with `now -e GHTOKEN=yourgithubpersonalaccesstoken`.
