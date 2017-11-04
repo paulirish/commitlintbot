@@ -25,7 +25,7 @@
 
 ## The problem
 
-You use [conventional-changelog](http://conventionalcommits.org/), but you squash pull requests (PRs). So you want PR titles to match the same semantics as your conventional changelog requirements.
+You use [conventional-changelog](http://conventionalcommits.org/), but you squash pull requests (PRs). So you want PR titles to match the same semantics as your conventional changelog requirements. _(If you want a bot to lint against your commit messages instead of the PR title, then check out [ahmed-taj/commitlint-bot](https://github.com/ahmed-taj/commitlint-bot)!)_
 
 ## This solution
 
@@ -38,8 +38,8 @@ commitlintbot is a bot that will update your pull request's commit status based 
 
 ## Configuration
 * A [default commitlint config](./default-commitlint.config.js) will be applied.
-   * However if you have a `commitlint.config.js` in the root of the repo, that will be used instead. The other config formats are not supported.
-* ~Additionally, if you have a `.cz-config.js` in the root of your repo, that will be used to enforce your custom scopes & types.~  This is broken ATM. <3
+   * However if you have a `commitlint.config.js` in the root of the repo, that will be used instead. The other config formats (.commitlintrc.js, .commitlintrc.json, .commitlintrc.yml) are **not** supported.
+* ~Additionally, if you have a `.cz-config.js` in the root of your repo, that will be used to enforce your custom scopes & types.~ This is [broken](https://github.com/whizark/commitlint-config-cz/issues/2) ATM. <3
 
 
 ## Installation
