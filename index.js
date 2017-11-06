@@ -53,7 +53,7 @@ async function init(prData) {
       lintOpts.cz = true;
     }
     // FIXME: currently have to ignore extends:['cz'] in the config.
-    if (!githubData.repo.includes('lighthouse')) {
+    if (!githubData.repo.includes('lighthouse') && lintOpts.clintConfig && lintOpts.clintConfig.extends) {
       lintOpts.clintConfig.extends = lintOpts.clintConfig.extends.filter(e => e !== 'cz');
     }
 
