@@ -7,19 +7,18 @@ Raven.config(
 ).install();
 
 const requireFromString = require('require-from-string');
-const lhClintConfig = require('./lighthouse.commitlint.config');
 const {getPRTitle, getFileContents} = require('./github');
 
 const lint = require('./lint');
 
 const MAXIMUM_STATUS_LENGTH = 140;
 const czConfigFilename = `.cz-config.js`;
-const czConfigPath = `${__dirname}/${czConfigFilename}`;
+const czConfigPath = `${__dirname}/../${czConfigFilename}`;
 const clintConfigFilename = 'commitlint.config.js';
 
 const baseGithubData = {
   token: process.env.GHTOKEN, // (github oauth token: https://developer.github.com/v3/oauth)
-  label: 'commitlint'
+  label: 'pr title lint'
 };
 
 async function init(prData) {
@@ -42,7 +41,7 @@ async function init(prData) {
       lintOpts.clintConfig = requireFromString(clintConfigContent);
       // FIXME: remove this hack for backwards compatibility
     } else if (githubData.repo.includes('lighthouse')) {
-      lintOpts.clintConfig = lhClintConfig;
+      lintOpts.clintConfig = require('./lighthouse.commitlint.config'); // where even is this
     }
 
     // FIXME: can't write to disk on now.sh. will have to find a workaround.
@@ -89,25 +88,25 @@ async function init(prData) {
     return {status, data: {error}};
   }
 
-  function generateURL(prTitle, reportArr) {
-    const titlePrefix = `Commit message:
-> ${prTitle}
 
-commitlint results:
-`;
-    const link = `
-
-Expected PR title format is: {type}({optional-scope}): {subject}
-
-See commitlint rules: https://github.com/marionebl/commitlint/blob/master/docs/reference-rules.md`;
-    const preparedString = `${titlePrefix}${reportArr.join('&#010;')}`
-      .replace(/✖/g, '&#x2716;')
-      .replace(/✔/g, '&#x2714;')
-      .replace(/⚠/g, '&#x26A0;');
-    return `https://unhtml.appspot.com/escape?%3Cpre%3E${encodeURIComponent(
-      preparedString
-    )}%3C/pre%3E${encodeURIComponent(link)}`;
-  }
 }
 
 module.exports = init;
+
+function generateURL(prTitle, reportArr) {
+  const outputStr = `
+### Pull request title
+> ${prTitle}
+
+### Commitlint results
+
+* ${reportArr.join('\n* ')}
+
+Expected PR title format is: \`{type}({optional-scope}): {subject}\`
+
+[Full docs of commitlint rules](https://github.com/marionebl/commitlint/blob/master/docs/reference-rules.md)
+    `;
+
+  return `https://commitlintbot.now.sh/details/?msg=${encodeURIComponent(outputStr)}`;
+}
+

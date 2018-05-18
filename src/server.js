@@ -1,10 +1,11 @@
 const bodyParser = require('body-parser');
 const server = require('express')();
 const Queue = require('promise-queue');
-const {version} = require('./package.json');
+const {version} = require('../package.json');
 const commitlintbot = require('./');
 
 const Raven = require('raven');
+const viewDetails = require('./view-details');
 
 const log = console;
 
@@ -13,6 +14,8 @@ const queue = new Queue(1, process.env.STAGE_CI_MAX_QUEUE || 100);
 
 // github's webhook MUST use `application/json`
 server.use(bodyParser.json());
+
+server.get('/details/', viewDetails);
 
 server.get('/', (request, response) => {
   response.json({version, queue});
