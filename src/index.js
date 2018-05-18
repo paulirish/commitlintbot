@@ -89,25 +89,28 @@ async function init(prData) {
     return {status, data: {error}};
   }
 
-  function generateURL(prTitle, reportArr) {
-    const titlePrefix = `Pull request title:
-> ${prTitle}
 
-commitlint results:
-`;
-    const link = `
-
-Expected PR title format is: {type}({optional-scope}): {subject}
-
-See commitlint rules: https://github.com/marionebl/commitlint/blob/master/docs/reference-rules.md`;
-    const preparedString = `${titlePrefix}${reportArr.join('&#010;')}`
-      .replace(/✖/g, '&#x2716;')
-      .replace(/✔/g, '&#x2714;')
-      .replace(/⚠/g, '&#x26A0;');
-    return `https://unhtml.appspot.com/escape?%3Cpre%3E${encodeURIComponent(
-      preparedString
-    )}%3C/pre%3E${encodeURIComponent(link)}`;
-  }
 }
 
 module.exports = init;
+
+function generateURL(prTitle, reportArr) {
+  const titlePrefix = `### Pull request title
+> ${prTitle}
+
+### Commitlint results
+`;
+  const link = `
+Expected PR title format is: \`{type}({optional-scope}): {subject}\`
+
+[Full docs of commitlint rules](https://github.com/marionebl/commitlint/blob/master/docs/reference-rules.md)
+`
+;
+  const outputStr = `
+    ${titlePrefix}
+    ${reportArr.join('\n')}
+    ${link};
+    `;
+  return `http://localhost:3000/details/?msg=${encodeURIComponent(outputStr)}`;
+}
+
