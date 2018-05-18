@@ -19,7 +19,7 @@ const clintConfigFilename = 'commitlint.config.js';
 
 const baseGithubData = {
   token: process.env.GHTOKEN, // (github oauth token: https://developer.github.com/v3/oauth)
-  label: 'commitlint'
+  label: 'pr title lint'
 };
 
 async function init(prData) {
@@ -90,7 +90,7 @@ async function init(prData) {
   }
 
   function generateURL(prTitle, reportArr) {
-    const titlePrefix = `Commit message:
+    const titlePrefix = `Pull request title:
 > ${prTitle}
 
 commitlint results:
