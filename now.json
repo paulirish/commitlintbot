@@ -1,13 +1,14 @@
 {
   "alias": "commitlintbot",
   "files": [
-  	"index.js",
-  	"server.js",
-  	"github.js",
-  	"lint.js",
-  	"default-commitlint.config.js",
-		"lighthouse.commitlint.config.js",
-		".cz-config.js",
+  	"src/index.js",
+  	"src/server.js",
+  	"src/github.js",
+  	"src/lint.js",
+  	"src/default-commitlint.config.js",
+  	"src/view-details.js",
+		"src/lighthouse.commitlint.config.js",
+		"src/.cz-config.js",
   	"yarn.lock",
   	".gitignore",
   	".gitattributes"

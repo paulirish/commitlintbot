@@ -2,7 +2,7 @@
   "name": "commitlintbot",
   "version": "0.2.2",
   "description": "Runs commitlint against your projects PRs",
-  "main": "index.js",
+  "main": "src/index.js",
   "engines": {
     "node": "> 4",
     "npm": "> 3"
@@ -15,7 +15,6 @@
     "dist"
   ],
   "keywords": [],
-  "author": "Kent C. Dodds <kent@doddsfamily.us> (http://kentcdodds.com/)",
   "license": "MIT",
   "dependencies": {
     "@commitlint/core": "^4.1.0",
