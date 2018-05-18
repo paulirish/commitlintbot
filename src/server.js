@@ -1,7 +1,7 @@
 const bodyParser = require('body-parser');
 const server = require('express')();
 const Queue = require('promise-queue');
-const {version} = require('./package.json');
+const {version} = require('../package.json');
 const commitlintbot = require('./');
 
 const Raven = require('raven');
