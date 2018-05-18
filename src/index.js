@@ -7,14 +7,13 @@ Raven.config(
 ).install();
 
 const requireFromString = require('require-from-string');
-const lhClintConfig = require('./lighthouse.commitlint.config');
 const {getPRTitle, getFileContents} = require('./github');
 
 const lint = require('./lint');
 
 const MAXIMUM_STATUS_LENGTH = 140;
 const czConfigFilename = `.cz-config.js`;
-const czConfigPath = `${__dirname}/${czConfigFilename}`;
+const czConfigPath = `${__dirname}/../${czConfigFilename}`;
 const clintConfigFilename = 'commitlint.config.js';
 
 const baseGithubData = {
@@ -42,7 +41,7 @@ async function init(prData) {
       lintOpts.clintConfig = requireFromString(clintConfigContent);
       // FIXME: remove this hack for backwards compatibility
     } else if (githubData.repo.includes('lighthouse')) {
-      lintOpts.clintConfig = lhClintConfig;
+      lintOpts.clintConfig = require('./lighthouse.commitlint.config'); // where even is this
     }
 
     // FIXME: can't write to disk on now.sh. will have to find a workaround.
@@ -95,22 +94,19 @@ async function init(prData) {
 module.exports = init;
 
 function generateURL(prTitle, reportArr) {
-  const titlePrefix = `### Pull request title
+  const outputStr = `
+### Pull request title
 > ${prTitle}
 
 ### Commitlint results
-`;
-  const link = `
+
+* ${reportArr.join('\n* ')}
+
 Expected PR title format is: \`{type}({optional-scope}): {subject}\`
 
 [Full docs of commitlint rules](https://github.com/marionebl/commitlint/blob/master/docs/reference-rules.md)
-`
-;
-  const outputStr = `
-    ${titlePrefix}
-    ${reportArr.join('\n')}
-    ${link};
     `;
+
   return `http://localhost:3000/details/?msg=${encodeURIComponent(outputStr)}`;
 }
 
