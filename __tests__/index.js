@@ -1,4 +1,4 @@
-const commitlintbot = require('../');
+const commitlintbot = require('../src/index');
 
 test.skip('commitlint should not throw', async () => {
   const prData = {

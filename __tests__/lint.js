@@ -1,4 +1,4 @@
-const lint = require('../lint');
+const lint = require('../src/lint');
 
 test('commitlint should work', async () => {
 
