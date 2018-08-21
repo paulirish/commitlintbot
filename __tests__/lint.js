@@ -15,3 +15,5 @@ test('commitlint should work', async () => {
 	expect(ret.reportObj.valid).toEqual(false);
 	expect(ret.reportObj.errors.length).toEqual(1);
 });
+
+// todo add tests for handling czConfig
