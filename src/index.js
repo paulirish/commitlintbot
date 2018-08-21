@@ -13,7 +13,7 @@ const lint = require('./lint');
 
 const MAXIMUM_STATUS_LENGTH = 140;
 const czConfigFilename = `.cz-config.js`;
-const czConfigPath = `${__dirname}/../${czConfigFilename}`;
+const czConfigPath = `${__dirname}/${czConfigFilename}`;
 const clintConfigFilename = 'commitlint.config.js';
 
 const baseGithubData = {
