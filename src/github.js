@@ -1,3 +1,5 @@
+'use strict';
+
 const axios = require('axios');
 
 function api(data, repo, suffix) {
@@ -11,8 +13,8 @@ function api(data, repo, suffix) {
     headers: {Authorization: `token ${data.token}`}
   })
     .then(ret => ret.data)
-    .catch(e => {
-      const response = e.response || {status: 500};
+    .catch(err => {
+      const response = err.response || {status: 500};
 
       return Promise.reject({
         status: response.status,
@@ -24,7 +26,7 @@ function api(data, repo, suffix) {
 const getPRTitle = async data => {
   const payload = await api(data, data.repo, `pulls/${data.pr}`).catch(err => {
     console.warn('getPRTItle', err.status);
-    throw new Error(`Failed to fetch title from Github API: ${err.status} ${err.error.message} ${err.error.documentation_url}`)
+    throw new Error(`Failed to fetch title from Github API: ${err.status} ${err.error.message} ${err.error.documentation_url}`);
   });
   return payload && payload.title;
 };
@@ -37,6 +39,6 @@ const getFileContents = async (data, path) => {
 };
 
 module.exports = {
-  getPRTitle: getPRTitle,
-  getFileContents: getFileContents
+  getPRTitle,
+  getFileContents,
 };

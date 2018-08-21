@@ -18,6 +18,7 @@
   "license": "MIT",
   "dependencies": {
     "@commitlint/core": "^4.1.0",
+    "axios": "0.15.3",
     "body-parser": "^1.15.2",
     "commitlint-config-cz": "^0.10.0",
     "express": "^4.14.0",

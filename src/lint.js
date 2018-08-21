@@ -1,6 +1,8 @@
+'use strict';
+
 const commitlint = require('@commitlint/core');
-const defaultClintConfig = require('./default-commitlint.config');
 const mergeCZWithBaseConfig = require('commitlint-config-cz/lib/config').get;
+const defaultClintConfig = require('./default-commitlint.config');
 
 async function lint(prTitle, lintOpts = {}, czConfigContent) {
   console.log(`> Linting: ${prTitle}`);

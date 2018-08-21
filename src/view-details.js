@@ -1,13 +1,15 @@
+'use strict';
+
 const marked = require('marked');
 
 module.exports = (request, response) => {
-  const {headers, query} = request;
+  const {query} = request;
   if (Object.keys(query).length === 0 || !query.msg) return response.status(204);
 
   const markdown = decodeURIComponent(query.msg)
-      .replace(/✖/g, '❌')
-      .replace(/✔/g, '✅')
-      .replace(/⚠/g, '⚠️');
+    .replace(/✖/g, '❌')
+    .replace(/✔/g, '✅')
+    .replace(/⚠/g, '⚠️');
 
   const html = marked(markdown);
   console.log(html);

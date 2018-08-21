@@ -1,11 +1,12 @@
-const fs = require('fs');
-const CommitStatus = require('github-build');
+'use strict';
 
 const Raven = require('raven');
+
 Raven.config(
   'https://7b0de65a1e1f43a1bfc3ff0048b3a0eb:1491617418f048cdb1da1b9179575fbc@sentry.io/235838'
 ).install();
 
+const CommitStatus = require('github-build');
 const requireFromString = require('require-from-string');
 const {getPRTitle, getFileContents} = require('./github');
 
@@ -13,7 +14,6 @@ const lint = require('./lint');
 
 const MAXIMUM_STATUS_LENGTH = 140;
 const czConfigFilename = `.cz-config.js`;
-const czConfigPath = `${__dirname}/${czConfigFilename}`;
 const clintConfigFilename = 'commitlint.config.js';
 
 const baseGithubData = {
@@ -61,19 +61,17 @@ async function init(prData) {
     console.log(flatReport);
     const failureMsg = flatReport.slice(0, MAXIMUM_STATUS_LENGTH);
     return status.fail(failureMsg, generateURL(title, report)).catch(handleCommitStatusFailure);
-  } catch (e) {
-    console.error('⚠️ Runtime failure', e);
-    Raven.captureException(e);
+  } catch (err) {
+    console.error('⚠️ Runtime failure', err);
+    Raven.captureException(err);
     // Set status to error
-    return status.error(e).catch(handleCommitStatusFailure);
+    return status.error(err).catch(handleCommitStatusFailure);
   }
 
   function handleCommitStatusFailure({status, error}) {
     console.warn('Failed to set commit status API via github-build', status, error);
     return {status, data: {error}};
   }
-
-
 }
 
 module.exports = init;

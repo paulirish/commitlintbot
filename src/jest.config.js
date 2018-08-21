@@ -1,5 +1,7 @@
-module.exports =  {
-	"globals": {
-		"GHTOKEN": process.env.GHTOKEN
-	}
+'use strict';
+
+module.exports = {
+  globals: {
+    GHTOKEN: process.env.GHTOKEN,
+  },
 };
