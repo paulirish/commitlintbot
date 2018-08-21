@@ -1,5 +1,6 @@
 {
   "alias": "commitlintbot",
+  "regions": ["sfo"],
   "files": [
   	"src",
   	"yarn.lock",
