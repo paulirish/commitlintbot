@@ -13,7 +13,7 @@ const lint = require('./lint');
 
 const MAXIMUM_STATUS_LENGTH = 140;
 const czConfigFilename = `.cz-config.js`;
-const czConfigPath = `${__dirname}/../${czConfigFilename}`;
+const czConfigPath = `${__dirname}/${czConfigFilename}`;
 const clintConfigFilename = 'commitlint.config.js';
 
 const baseGithubData = {
@@ -41,25 +41,10 @@ async function init(prData) {
       lintOpts.clintConfig = requireFromString(clintConfigContent);
       // FIXME: remove this hack for backwards compatibility
     } else if (githubData.repo.includes('lighthouse')) {
-      lintOpts.clintConfig = require('./lighthouse.commitlint.config'); // where even is this
+      lintOpts.clintConfig = require('./lighthouse.commitlint.config'); // Ideally this would be in the LH repo, instead.
     }
 
-    // FIXME: can't write to disk on now.sh. will have to find a workaround.
-    // https://github.com/paulirish/commitlintbot/issues/3
-    if (false && czConfigContent) {
-      // unfortunately this file needs to be read off of disk
-      fs.writeFileSync(czConfigPath, czConfigContent);
-      lintOpts.cz = true;
-    }
-    // FIXME: currently have to ignore extends:['cz'] in the config.
-    if (!githubData.repo.includes('lighthouse') && lintOpts.clintConfig && lintOpts.clintConfig.extends) {
-      lintOpts.clintConfig.extends = lintOpts.clintConfig.extends.filter(e => e !== 'cz');
-    }
-
-    const {report, reportObj} = await lint(title, lintOpts);
-
-    // FIXME this too.
-    if (false && fs.existsSync(czConfigPath)) fs.unlinkSync(czConfigPath);
+    const {report, reportObj} = await lint(title, lintOpts, czConfigContent);
 
     const flatReport = report.join('. ');
 
