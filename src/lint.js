@@ -13,6 +13,10 @@ async function lint(prTitle, lintOpts = {}, czConfig) {
 
   let mergedConfig;
   if (czConfig) {
+    // Hack because clint has this CRAZY FUCKING module loader if it sees an .extends prop
+    const index = baseConfig.extends.indexOf('cz');
+    index > -1 && baseConfig.extends.splice(index, 1);
+
     // Hack because of some weird expectation inside of commitlint-config-cz/lib/config').get;
     if (czConfig.scopes.length && !baseConfig.rules['scope-enum']) {
       baseConfig.rules['scope-enum'] = [2, 'always'];
@@ -43,7 +47,7 @@ module.exports = lint;
 if (process.argv.length > 2 && process.argv[1].includes('lint.js')) {
   (async function() {
     if (process.argv[3] == '--lh') {
-      const {lintOpts, czConfig} =  lhConfig();
+      const {lintOpts, czConfig} =  getLHConfigPlaceholders();
       const {report} = await lint(process.argv[2], lintOpts, czConfig);
       process.stdout.write(report.join('\n') + '\n');
     } else {
@@ -53,7 +57,7 @@ if (process.argv.length > 2 && process.argv[1].includes('lint.js')) {
   })();
 }
 
-function lhConfig() {
+function getLHConfigPlaceholders() {
   const lintOpts = {
     clintConfig: {
       extends: ['cz'],
