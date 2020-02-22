@@ -35,13 +35,13 @@ async function init(prData) {
       getFileContents(githubData, clintConfigFilename),
       getFileContents(githubData, czConfigFilename)
     ];
-    const [title, clintConfigContent, czConfigContent] = await Promise.all(apiFetches);
+    let [title, clintConfigContent, czConfigContent] = await Promise.all(apiFetches);
 
     if (clintConfigContent) {
       lintOpts.clintConfig = requireFromString(clintConfigContent);
-      // FIXME: remove this hack for backwards compatibility
-    } else if (githubData.repo.includes('lighthouse')) {
-      lintOpts.clintConfig = require('./lighthouse.commitlint.config'); // Ideally this would be in the LH repo, instead.
+    }
+    if (czConfigContent) {
+      czConfigContent = requireFromString(czConfigContent)
     }
 
     const {report, reportObj} = await lint(title, lintOpts, czConfigContent);
