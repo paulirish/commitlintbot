@@ -1,5 +1,5 @@
 secretstuff
-
+SECRETCODE
 node_modules
 coverage
 
@@ -7,3 +7,5 @@ coverage
 .eslintcache
 
 package-lock.json
+
+.now

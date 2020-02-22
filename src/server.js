@@ -14,15 +14,13 @@ const PORT = process.env.PORT || 3000;
 const queue = new Queue(1, process.env.STAGE_CI_MAX_QUEUE || 100);
 
 // github's webhook MUST use `application/json`
-server.use(bodyParser.json());
+// server.use(bodyParser.json());
 
-server.get('/details/', viewDetails);
-
-server.get('/', (request, response) => {
+const indexGET = (request, response) => {
   response.json({version, queue});
-});
+};
 
-server.post('/', (request, response) => {
+const indexPOST = (request, response) => {
   let result;
   try {
     const {headers, body} = request;
@@ -82,8 +80,11 @@ server.post('/', (request, response) => {
     }
     log.info('> Done!');
   });
-});
+};
 
-server.listen(PORT, () => {
-  log.info(`Server listening on ${PORT}... `);
-});
+
+module.exports = {
+  indexGET,
+  indexPOST,
+  viewDetails,
+}

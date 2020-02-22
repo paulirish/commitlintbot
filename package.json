@@ -8,8 +8,7 @@
     "npm": "> 3"
   },
   "scripts": {
-    "test": "jest",
-    "start": "node --trace-warnings src/server.js"
+    "test": "jest"
   },
   "files": [
     "dist"
@@ -18,6 +17,7 @@
   "license": "MIT",
   "dependencies": {
     "@commitlint/core": "^4.1.0",
+    "@now/node": "^1.4.1",
     "axios": "0.15.3",
     "body-parser": "^1.15.2",
     "commitlint-config-cz": "^0.10.0",

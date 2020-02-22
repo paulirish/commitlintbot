@@ -1,15 +1,15 @@
 {
-  "alias": "commitlintbot",
-  "scale": {
-    "sfo1": {
-      "min": 1,
-      "max": 1
-    }
-  },
+  "version": 2,
+  "scope": "paulirish",
+  "alias": "commitlintbot2",
   "files": [
-  	"src",
-  	"yarn.lock",
-  	".gitignore",
-  	".gitattributes"
-  ]
+    "src",
+    "api",
+    "yarn.lock",
+    ".gitignore",
+    ".gitattributes"
+  ],
+  "env": {
+    "GHTOKEN":"13321aefded4a256a87007a72d5631420728e968"
+  }
 }

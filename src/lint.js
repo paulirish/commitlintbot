@@ -22,6 +22,7 @@ async function lint(prTitle, lintOpts = {}, czConfigContent) {
     mergedConfig = baseConfig;
   }
 
+  debugger;
   const opts = await commitlint.load(mergedConfig);
   const reportObj = await commitlint.lint(prTitle, opts.rules);
   const report = await commitlint.format(reportObj, {color: false});

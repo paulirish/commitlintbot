@@ -39,6 +39,18 @@
     mkdirp "^0.5.1"
     rimraf "^2.5.2"
 
+"@now/node@^1.4.1":
+  version "1.4.1"
+  resolved "https://registry.yarnpkg.com/@now/node/-/node-1.4.1.tgz#a07e22abb34d892e77fef1471f35518ddb39dbfc"
+  integrity sha512-EjP/pdBMKsEMCGQ1OLLmBGnjA3QZG1erYTrMqmDVqypeQsY1UUFTY4h1C4d6WNq33qk/nMxpcJzuAhxt+nLQyg==
+  dependencies:
+    "@types/node" "*"
+
+"@types/node@*":
+  version "13.7.4"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-13.7.4.tgz#76c3cb3a12909510f52e5dc04a6298cdf9504ffd"
+  integrity sha512-oVeL12C6gQS/GAExndigSaLxTrKpQPxewx9bOcwfvJiJge4rr7wNaph4J+ns5hrmIV2as5qxqN8YKthn9qh0jw==
+
 JSONStream@^1.0.4:
   version "1.3.1"
   resolved "https://registry.yarnpkg.com/JSONStream/-/JSONStream-1.3.1.tgz#707f761e01dae9e16f1bcf93703b78c70966579a"
@@ -601,6 +613,13 @@ conventional-changelog-angular@^1.3.3:
   dependencies:
     compare-func "^1.3.1"
     q "^1.4.1"
+
+conventional-changelog-lint-config-cz@^0.10.0:
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/conventional-changelog-lint-config-cz/-/conventional-changelog-lint-config-cz-0.3.0.tgz#082e05823a63f064551f0f8df846c4f8d18eaf69"
+  integrity sha1-CC4Fgjpj8GRVHw+N+EbE+NGOr2k=
+  dependencies:
+    app-root-path "~2.0.1"
 
 conventional-commits-parser@^1.3.0:
   version "1.3.0"
