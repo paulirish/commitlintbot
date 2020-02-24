@@ -10,6 +10,6 @@
     ".gitattributes"
   ],
   "env": {
-    "GHTOKEN":"13321aefded4a256a87007a72d5631420728e968"
+    "GHTOKEN":"@ghtoken"
   }
 }
