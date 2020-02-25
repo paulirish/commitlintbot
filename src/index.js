@@ -8,7 +8,8 @@ Raven.config(
 
 const CommitStatus = require('github-build');
 const requireFromString = require('require-from-string');
-const {getPRTitle, getFileContents} = require('./github');
+const {getPRTitle, getFileContents} = require('./github.js');
+const {generateURL} = require('./view-details.js');
 
 const lint = require('./lint');
 
@@ -86,23 +87,7 @@ async function main(prData, cliRunData = false, opts = defaultOpts) {
 
 module.exports = main;
 
-function generateURL(prTitle, reportArr) {
-  const outputStr = `
-### Pull request title
-> ${prTitle}
 
-### Expected format
-> \`\${type}(\${optional-scope}): \${subject}\`
-
-### Commitlint results
-
-* ${reportArr.join('\n* ')}
-
-[Full docs of commitlint rules](https://github.com/marionebl/commitlint/blob/master/docs/reference-rules.md)
-`;
-
-  return `https://commitlintbot.now.sh/details/?msg=${encodeURIComponent(outputStr)}`;
-}
 
 class MockCommitStatus {
   start (_) { return Promise.resolve(); }
