@@ -17,47 +17,55 @@ const czConfigFilename = `.cz-config.js`;
 const clintConfigFilename = 'commitlint.config.js';
 
 const baseGithubData = {
-  token: process.env.GHTOKEN, // (github oauth token: https://developer.github.com/v3/oauth)
+  token: process.env.ghtoken, // (github oauth token: https://developer.github.com/v3/oauth)
   label: 'pr title lint'
 };
 
-async function init(prData) {
-  let status;
+async function gatherGithubData(githubData) {
+  const apiFetches = [
+    getPRTitle(githubData),
+    getFileContents(githubData, clintConfigFilename),
+    getFileContents(githubData, czConfigFilename)
+  ];
+  let [title, clintConfigContent, czConfigContent] = await Promise.all(apiFetches);
+
+  // requireFromString: js file string => object
+  const clintConfig = clintConfigContent && requireFromString(clintConfigContent);
+  const czConfig = requireFromString(czConfigContent);
+
+  return {title, clintConfig, czConfig}
+}
+
+async function main(prData, cliRunData = false, {reportStatus = true}) {
   try {
+    let status;
     const githubData = Object.assign({}, baseGithubData, prData);
-    status = new CommitStatus(githubData);
+
+    status = reportStatus ? new CommitStatus(githubData) : new MockCommitStatus();
     await status.start('Linting the pull request title...').catch(handleCommitStatusFailure);
 
-    const lintOpts = {};
+    // Allow CLI use for local testing :p
+    const {title, clintConfig, czConfig} = await (!cliRunData ?
+      gatherGithubData(githubData) :
+      Promise.resolve(cliRunData));
 
-    const apiFetches = [
-      getPRTitle(githubData),
-      getFileContents(githubData, clintConfigFilename),
-      getFileContents(githubData, czConfigFilename)
-    ];
-    let [title, clintConfigContent, czConfigContent] = await Promise.all(apiFetches);
+    const {report, reportObj} = await lint(title, clintConfig, czConfig);
 
-    if (clintConfigContent) {
-      lintOpts.clintConfig = requireFromString(clintConfigContent);
-    }
-    if (czConfigContent) {
-      czConfigContent = requireFromString(czConfigContent)
-    }
 
-    const {report, reportObj} = await lint(title, lintOpts, czConfigContent);
-
-    const flatReport = report.join('. ');
+    reportStatus && console.log('🌏 Reporting real status to GitHub: ', `https://api.github.com/repos/${prData.repo}/statuses/${prData.sha}`);
 
     // Set status to passing
     if (reportObj.valid === true) {
-      console.log(`> 🖋✅ Setting status: _passing_ (https://github.com/${githubData.repo}/pull/${githubData.pr})`);
+      console.log(`> 🖋✅ _Passing_ (https://github.com/${githubData.repo}/pull/${githubData.pr})`);
       return status
         .pass('PR title is good to go, boss', generateURL(title, report))
         .catch(handleCommitStatusFailure);
     }
 
     // Set status to failing
-    console.log(`> 🖋❌ Setting status: _failing_ (https://github.com/${githubData.repo}/pull/${githubData.pr})`);
+    console.log(`> 🖋❌ _Failing_ (https://github.com/${githubData.repo}/pull/${githubData.pr})`);
+
+    const flatReport = report.join('.\n');
     console.log(flatReport);
     const failureMsg = flatReport.slice(0, MAXIMUM_STATUS_LENGTH);
     return status.fail(failureMsg, generateURL(title, report)).catch(handleCommitStatusFailure);
@@ -74,7 +82,7 @@ async function init(prData) {
   }
 }
 
-module.exports = init;
+module.exports = main;
 
 function generateURL(prTitle, reportArr) {
   const outputStr = `
@@ -93,3 +101,9 @@ Expected PR title format is: \`{type}({optional-scope}): {subject}\`
   return `https://commitlintbot.now.sh/details/?msg=${encodeURIComponent(outputStr)}`;
 }
 
+class MockCommitStatus {
+  start (_) { return Promise.resolve(); }
+  pass  (_) { return Promise.resolve(); }
+  fail  (_) { return Promise.resolve(); }
+  error (_) { return Promise.resolve(); }
+}

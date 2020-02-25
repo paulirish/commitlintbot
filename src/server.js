@@ -21,7 +21,7 @@ const indexGET = (request, response) => {
 };
 
 const indexPOST = (request, response) => {
-  let result;
+  let prData;
   try {
     const {headers, body} = request;
 
@@ -45,7 +45,7 @@ const indexPOST = (request, response) => {
     }
 
     // pull out required info
-    result = {
+    prData = {
       repo: body.repository.full_name,
       srcRepo: body.pull_request.head.repo.full_name,
       sha: body.pull_request.head.sha,
@@ -60,7 +60,7 @@ const indexPOST = (request, response) => {
   queue.add(async _ => {
     log.info(`> Calling commitlint bot with received webhook data`);
     try {
-      const {status, data} = await commitlintbot(result);
+      const {status, data} = await commitlintbot(prData);
       // Some status API call failure
       if (data.error) {
         if (status === 404)

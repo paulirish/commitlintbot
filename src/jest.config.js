@@ -2,6 +2,6 @@
 
 module.exports = {
   globals: {
-    GHTOKEN: process.env.GHTOKEN,
+    ghtoken: process.env.ghtoken,
   },
 };
