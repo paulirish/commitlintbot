@@ -91,14 +91,15 @@ function generateURL(prTitle, reportArr) {
 ### Pull request title
 > ${prTitle}
 
+### Expected format
+> \`\${type}(\${optional-scope}): \${subject}\`
+
 ### Commitlint results
 
 * ${reportArr.join('\n* ')}
 
-Expected PR title format is: \`{type}({optional-scope}): {subject}\`
-
 [Full docs of commitlint rules](https://github.com/marionebl/commitlint/blob/master/docs/reference-rules.md)
-    `;
+`;
 
   return `https://commitlintbot.now.sh/details/?msg=${encodeURIComponent(outputStr)}`;
 }
