@@ -36,12 +36,14 @@ async function gatherGithubData(githubData) {
   return {title, clintConfig, czConfig}
 }
 
-async function main(prData, cliRunData = false, {reportStatus = true}) {
+const defaultOpts = {reportStatus: true};
+
+async function main(prData, cliRunData = false, opts = defaultOpts) {
   try {
     let status;
     const githubData = Object.assign({}, baseGithubData, prData);
 
-    status = reportStatus ? new CommitStatus(githubData) : new MockCommitStatus();
+    status = opts.reportStatus ? new CommitStatus(githubData) : new MockCommitStatus();
     await status.start('Linting the pull request title...').catch(handleCommitStatusFailure);
 
     // Allow CLI use for local testing :p
@@ -52,7 +54,7 @@ async function main(prData, cliRunData = false, {reportStatus = true}) {
     const {report, reportObj} = await lint(title, clintConfig, czConfig);
 
 
-    reportStatus && console.log('🌏 Reporting real status to GitHub: ', `https://api.github.com/repos/${prData.repo}/statuses/${prData.sha}`);
+    opts.reportStatus && console.log('🌏 Reporting real status to GitHub: ', `https://api.github.com/repos/${prData.repo}/statuses/${prData.sha}`);
 
     // Set status to passing
     if (reportObj.valid === true) {
