@@ -1,37 +1,57 @@
-const commitlint = require('@commitlint/core');
-const defaultClintConfig = require('./default-commitlint.config');
-const mergeCZWithBaseConfig = require('commitlint-config-cz/lib/config').get;
+'use strict';
 
-async function lint(prTitle, lintOpts = {}, czConfigContent) {
+const commitlint = require('@commitlint/core');
+const mergeCZWithBaseConfig = require('commitlint-config-cz/lib/config').get;
+const defaultClintConfig = require('./default-commitlint.config');
+
+async function lint(prTitle, clintConfig = {}, czConfig) {
   console.log(`> Linting: ${prTitle}`);
 
   // Use provided commitlint.config or fallback to our local preset
-  const baseConfig = lintOpts.clintConfig || defaultClintConfig;
+  const baseConfig = clintConfig || defaultClintConfig;
   baseConfig.extends = baseConfig.extends || [];
 
   let mergedConfig;
-  if (czConfigContent) {
-    // Hack because of some weird expectation inside of commitlint-config-cz/lib/config').get;
-    if (!baseConfig.rules['scope-enum']) baseConfig.rules['scope-enum'] = [0, 'never', 'bullshit'];
-    if (!baseConfig.rules['type-enum']) baseConfig.rules['type-enum'] = [0, 'never', 'bullshit'];
+  if (czConfig) {
+    // Hack because clint has this CRAZY FUCKING module loader if it sees an .extends prop
+    const index = baseConfig.extends.indexOf('cz');
+    index > -1 && baseConfig.extends.splice(index, 1);
 
-    mergedConfig = mergeCZWithBaseConfig(czConfigContent, baseConfig);
+    // Hack because of some weird expectation inside of commitlint-config-cz/lib/config').get;
+    if (czConfig.scopes.length && !baseConfig.rules['scope-enum']) {
+      baseConfig.rules['scope-enum'] = [2, 'always'];
+    }
+    if (czConfig.types.length && !baseConfig.rules['type-enum']) {
+      baseConfig.rules['type-enum'] = [2, 'always'];
+    }
+
+    mergedConfig = mergeCZWithBaseConfig(czConfig, baseConfig);
   } else {
     mergedConfig = baseConfig;
   }
 
+  // HACK remove deprecated rules. Can be removed after existing PRs
+  for (const deprecatedRule of ['body-tense', 'footer-tense', 'lang', 'subject-tense']) {
+    delete mergedConfig.rules[deprecatedRule];
+  }
+
   const opts = await commitlint.load(mergedConfig);
-  const reportObj = await commitlint.lint(prTitle, opts.rules);
-  const report = await commitlint.format(reportObj, {color: false});
-  return {reportObj, report};
+  try {
+    const reportObj = await commitlint.lint(prTitle, opts.rules);
+    let report = await commitlint.format.formatResult(reportObj, {color: false});
+    // drop weird helpURL https://github.com/conventional-changelog/commitlint/blob/master/docs/reference-api.md#usage
+    report = report.slice(0, report.length - 2);
+    return {reportObj, report};
+  } catch (e) {
+    return {
+      reportObj: {
+        valid: false,
+        errors: [e.message],
+        warnings: [],
+      },
+      report: [e.message]
+    }
+  }
 }
 
 module.exports = lint;
-
-// Run via node lint.js "feat: awesome feature"
-if (process.argv.length > 2) {
-  (async function() {
-    const {report} = await lint(process.argv[2]);
-    process.stdout.write(report.join('\n') + '\n');
-  })();
-}

@@ -45,7 +45,7 @@ commitlintbot is a bot that will update your pull request's commit status based 
 ## Installation
 
 * Setup webhook.
-  * `https://commitlintbot.now.sh`
+  * `https://commitlintbot2.now.sh`
   * `application/json`
   * Secret... not implemented. :|
   * Choose individual events: `Pull request`
@@ -61,11 +61,14 @@ The responses of the webhook should be minimally helpful:
 ![image](https://user-images.githubusercontent.com/39191/32409650-fcadd22a-c16c-11e7-8742-ac0b62cb5a35.png)
 
 
-## Also
+## Dev
 
-* If you want to run your own.. just deploy to `now` with `now -e GHTOKEN=yourgithubpersonalaccesstoken`.
+### getting a magical oauth token to use so the icon is the app not me
 
-
+1. https://github.com/login/oauth/authorize?client_id=e3737bbd21bc66fb0a18&login=GoogleChrome&scope=repo:status%20public_repo
+2. grab the `code` that's in the URL afterwards.
+3. https://developer.github.com/apps/building-oauth-apps/authorizing-oauth-apps/#2-users-are-redirected-back-to-your-site-by-github
+   * use postman or whatever to post those in the body
 
 
 ## LICENSE

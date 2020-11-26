@@ -1,9 +1,12 @@
 secretstuff
-
+SECRETCODE
 node_modules
 coverage
-
+other
 .DS_Store
 .eslintcache
 
 package-lock.json
+
+.now
+.env

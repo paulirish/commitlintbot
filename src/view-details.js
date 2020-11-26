@@ -1,13 +1,15 @@
+'use strict';
+
 const marked = require('marked');
 
 module.exports = (request, response) => {
-  const {headers, query} = request;
+  const {query} = request;
   if (Object.keys(query).length === 0 || !query.msg) return response.status(204);
 
   const markdown = decodeURIComponent(query.msg)
-      .replace(/✖/g, '❌')
-      .replace(/✔/g, '✅')
-      .replace(/⚠/g, '⚠️');
+    .replace(/✖/g, '❌')
+    .replace(/✔/g, '✅')
+    .replace(/⚠/g, '⚠️');
 
   const html = marked(markdown);
   console.log(html);
@@ -47,7 +49,7 @@ function getPageTemplate() {
       line-height: 0.625;
       font-size: 32px;
     }
-    }
+    code { font-size: 70%; }
     h3 {
       color: #283593;
     }
@@ -56,3 +58,22 @@ function getPageTemplate() {
     <article>
   `;
 }
+
+function generateURL(prTitle, reportArr) {
+  const outputStr = `
+### Pull request title
+> ${prTitle}
+
+### Expected format
+> \`\${type}(\${optional-scope}): \${subject}\`
+
+### Commitlint results
+
+* ${reportArr.join('\n* ')}
+
+[Full docs of commitlint rules](https://github.com/marionebl/commitlint/blob/master/docs/reference-rules.md)
+`;
+
+  return `https://commitlintbot2.now.sh/api/details?msg=${encodeURIComponent(outputStr)}`;
+}
+module.exports.generateURL = generateURL;
