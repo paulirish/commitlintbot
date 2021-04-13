@@ -45,7 +45,7 @@ commitlintbot is a bot that will update your pull request's commit status based 
 ## Installation
 
 * Setup webhook.
-  * `https://commitlintbot2.now.sh`
+  * `https://commitlintbot2.vercel.app/api/lint-title`
   * `application/json`
   * Secret... not implemented. :|
   * Choose individual events: `Pull request`
