@@ -19,7 +19,7 @@
   "dependencies": {
     "@commitlint/core": "^8.3.5",
     "@now/node": "^1.4.1",
-    "axios": "0.15.3",
+    "axios": "0.21.2",
     "body-parser": "^1.15.2",
     "commitlint-config-cz": "^0.13.0",
     "express": "^4.14.0",
