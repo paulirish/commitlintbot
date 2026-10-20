@@ -32,22 +32,25 @@ const indexPOST = (request, response) => {
       return response.status(400).send('Must set content type to `application/json`');
     if (!xGithubEvent) return response.status(403).send('Not a x-github-event POST');
 
-    console.log('\n\n> Received webhook: ', body.repository.full_name, xGithubEvent);
     // 'ping' sent when a repo first registers the webhook
-    if (xGithubEvent === 'ping') return response.sendStatus(200);
+    if (xGithubEvent === 'ping') return response.status(200).send('pong');
     if (xGithubEvent !== 'pull_request')
       return response.status(400).send('Unexpected non-pull_request webhook');
 
-    if (!body.repository) {
+    if (!body || !body.repository || !body.pull_request || !body.pull_request.head) {
       console.log('body', body);
       console.log('headers', headers);
-      throw new Error('Missing repository metadata.');
+      return response.status(400).send('Missing repository or pull_request metadata.');
     }
+
+    console.log('\n\n> Received webhook: ', body.repository.full_name, xGithubEvent);
 
     // pull out required info
     prData = {
       repo: body.repository.full_name,
-      srcRepo: body.pull_request.head.repo.full_name,
+      srcRepo: body.pull_request.head.repo
+        ? body.pull_request.head.repo.full_name
+        : body.repository.full_name,
       sha: body.pull_request.head.sha,
       pr: body.number,
     };

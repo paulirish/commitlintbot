@@ -3,10 +3,10 @@
 const marked = require('marked');
 
 module.exports = (request, response) => {
-  const {query} = request;
-  if (Object.keys(query).length === 0 || !query.msg) return response.status(204);
+  const query = request.query || {};
+  if (Object.keys(query).length === 0 || !query.msg) return response.status(204).end();
 
-  const markdown = decodeURIComponent(query.msg)
+  const markdown = String(query.msg)
     .replace(/✖/g, '❌')
     .replace(/✔/g, '✅')
     .replace(/⚠/g, '⚠️');
@@ -74,6 +74,6 @@ function generateURL(prTitle, reportArr) {
 [Full docs of commitlint rules](https://github.com/marionebl/commitlint/blob/master/docs/reference-rules.md)
 `;
 
-  return `https://commitlintbot2.now.sh/api/details?msg=${encodeURIComponent(outputStr)}`;
+  return `https://commitlintbot2.vercel.app/api/details?msg=${encodeURIComponent(outputStr)}`;
 }
 module.exports.generateURL = generateURL;
