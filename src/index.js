@@ -22,6 +22,13 @@ const baseGithubData = {
   label: 'pr title lint'
 };
 
+function loadConfigFromString(content) {
+  if (!content) return undefined;
+  const cjsContent = content.replace(/^\s*export\s+default\b/m, 'module.exports =');
+  const mod = requireFromString(cjsContent);
+  return mod && mod.__esModule && mod.default ? mod.default : mod;
+}
+
 async function gatherGithubData(githubData) {
   const apiFetches = [
     getPRTitle(githubData),
@@ -31,8 +38,8 @@ async function gatherGithubData(githubData) {
   let [title, clintConfigContent, czConfigContent] = await Promise.all(apiFetches);
 
   // requireFromString: js file string => object
-  const clintConfig = clintConfigContent && requireFromString(clintConfigContent);
-  const czConfig = requireFromString(czConfigContent);
+  const clintConfig = loadConfigFromString(clintConfigContent);
+  const czConfig = loadConfigFromString(czConfigContent);
 
   return {title, clintConfig, czConfig}
 }
@@ -40,11 +47,9 @@ async function gatherGithubData(githubData) {
 const defaultOpts = {reportStatus: true};
 
 async function main(prData, cliRunData = false, opts = defaultOpts) {
+  const githubData = Object.assign({}, baseGithubData, prData);
+  const status = opts.reportStatus ? new CommitStatus(githubData) : new MockCommitStatus();
   try {
-    let status;
-    const githubData = Object.assign({}, baseGithubData, prData);
-
-    status = opts.reportStatus ? new CommitStatus(githubData) : new MockCommitStatus();
     await status.start('Linting the pull request title...').catch(handleCommitStatusFailure);
 
     // Allow CLI use for local testing :p
@@ -76,7 +81,8 @@ async function main(prData, cliRunData = false, opts = defaultOpts) {
     console.error('⚠️ Runtime failure', err);
     Raven.captureException(err);
     // Set status to error
-    return status.error(err).catch(handleCommitStatusFailure);
+    const errorMsg = (err && err.message ? err.message : String(err)).slice(0, MAXIMUM_STATUS_LENGTH);
+    return status.error(errorMsg).catch(handleCommitStatusFailure);
   }
 
   function handleCommitStatusFailure({status, error}) {
@@ -85,6 +91,7 @@ async function main(prData, cliRunData = false, opts = defaultOpts) {
   }
 }
 
+main.loadConfigFromString = loadConfigFromString;
 module.exports = main;
 
 
