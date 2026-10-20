@@ -1,5 +1,5 @@
+'use strict';
 
+const {viewDetails} = require('../src/server.js');
 
-const viewDetails = require('../src/server').viewDetails;
-
-export default viewDetails;
+module.exports = viewDetails;

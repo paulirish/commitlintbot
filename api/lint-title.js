@@ -1,6 +1,5 @@
+'use strict';
 
+const {indexPOST} = require('../src/server.js');
 
-import {indexPOST} from '../src/server.js';
-
-export default indexPOST;
-
+module.exports = indexPOST;

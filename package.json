@@ -4,9 +4,9 @@
   "description": "Runs commitlint against your projects PRs",
   "main": "src/index.js",
   "engines": {
-    "node": "> 4",
-    "npm": "> 3"
+    "node": ">=18"
   },
+  "packageManager": "yarn@1.22.22",
   "scripts": {
     "test": "jest",
     "demo": "node src/lint.js \"feat: awesome feature\""
@@ -18,7 +18,6 @@
   "license": "MIT",
   "dependencies": {
     "@commitlint/core": "^8.3.5",
-    "@now/node": "^1.4.1",
     "axios": "0.15.3",
     "body-parser": "^1.15.2",
     "commitlint-config-cz": "^0.13.0",

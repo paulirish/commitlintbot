@@ -9,4 +9,6 @@ other
 package-lock.json
 
 .now
+.vercel
 .env
+.env*
