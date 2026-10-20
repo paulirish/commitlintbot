@@ -1,8 +1,15 @@
 'use strict';
 
-const marked = require('marked');
+let _marked;
+async function getMarked() {
+  if (!_marked) {
+    const mod = await import('marked');
+    _marked = mod.marked || mod.default || mod;
+  }
+  return _marked;
+}
 
-module.exports = (request, response) => {
+module.exports = async (request, response) => {
   const query = request.query || {};
   if (Object.keys(query).length === 0 || !query.msg) return response.status(204).end();
 
@@ -11,7 +18,8 @@ module.exports = (request, response) => {
     .replace(/✔/g, '✅')
     .replace(/⚠/g, '⚠️');
 
-  const html = typeof marked.parse === 'function' ? marked.parse(markdown) : marked(markdown);
+  const markedInstance = await getMarked();
+  const html = typeof markedInstance.parse === 'function' ? markedInstance.parse(markdown) : markedInstance(markdown);
   console.log(html);
   return response.status(200).send(`${getPageTemplate()} ${html}`);
 };

@@ -57,19 +57,19 @@ test('commitlintbot main() works with cliRunData and MockCommitStatus', async ()
   assert.equal(failingRun, undefined);
 });
 
-test('viewDetails handles missing params and renders markdown with special chars', () => {
+test('viewDetails handles missing params and renders markdown with special chars', async () => {
   const resEmpty = createMockResponse();
-  viewDetails({query: {}}, resEmpty);
+  await viewDetails({query: {}}, resEmpty);
   assert.equal(resEmpty.statusCode, 204);
   assert.equal(resEmpty.ended, true);
 
   const resMissingMsg = createMockResponse();
-  viewDetails({query: {other: '123'}}, resMissingMsg);
+  await viewDetails({query: {other: '123'}}, resMissingMsg);
   assert.equal(resMissingMsg.statusCode, 204);
   assert.equal(resMissingMsg.ended, true);
 
   const resWithPercent = createMockResponse();
-  viewDetails({query: {msg: '### Title\n> perf: speed up by 25%\n* ✖ error [type-empty]'}}, resWithPercent);
+  await viewDetails({query: {msg: '### Title\n> perf: speed up by 25%\n* ✖ error [type-empty]'}}, resWithPercent);
   assert.equal(resWithPercent.statusCode, 200);
   assert.ok(resWithPercent.body.includes('speed up by 25%'));
   assert.ok(resWithPercent.body.includes('❌'));
