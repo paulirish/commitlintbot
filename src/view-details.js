@@ -11,7 +11,7 @@ module.exports = (request, response) => {
     .replace(/✔/g, '✅')
     .replace(/⚠/g, '⚠️');
 
-  const html = marked(markdown);
+  const html = typeof marked.parse === 'function' ? marked.parse(markdown) : marked(markdown);
   console.log(html);
   return response.status(200).send(`${getPageTemplate()} ${html}`);
 };

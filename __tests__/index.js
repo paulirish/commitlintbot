@@ -126,3 +126,90 @@ test('server indexPOST validates headers and payloads cleanly', async () => {
   assert.equal(resNoPR.statusCode, 400);
   assert.equal(resNoPR.body, 'Missing repository or pull_request metadata.');
 });
+
+test('commitlintbot main() and CommitStatus lifecycle with mocked fetch', async () => {
+  const originalFetch = global.fetch;
+  const calls = [];
+
+  global.fetch = async (url, options = {}) => {
+    calls.push({url, method: options.method || 'GET', body: options.body ? JSON.parse(options.body) : null});
+
+    if (url.includes('/pulls/100')) {
+      return {
+        ok: true,
+        status: 200,
+        json: async () => ({title: 'feat: amazing new feature'})
+      };
+    }
+    if (url.includes('/pulls/200')) {
+      return {
+        ok: true,
+        status: 200,
+        json: async () => ({title: 'bad title'})
+      };
+    }
+    if (url.includes('/pulls/300')) {
+      return {
+        ok: false,
+        status: 404,
+        json: async () => ({message: 'Not Found', documentation_url: 'https://docs.github.com'})
+      };
+    }
+    if (url.includes('/contents/')) {
+      return {
+        ok: false,
+        status: 404,
+        json: async () => ({message: 'Not Found'})
+      };
+    }
+    if (url.includes('/statuses/')) {
+      return {
+        ok: true,
+        status: 201,
+        json: async () => ({state: calls[calls.length - 1].body.state})
+      };
+    }
+    return {ok: true, status: 200, json: async () => ({})};
+  };
+
+  try {
+    // 1. Passing PR
+    calls.length = 0;
+    const resPass = await commitlintbot({
+      repo: 'test/repo',
+      srcRepo: 'test/repo',
+      sha: 'abcdef1234567890abcdef1234567890abcdef12',
+      pr: 100,
+    });
+    assert.equal(resPass.status, 201);
+    const passStates = calls.filter(c => c.url.includes('/statuses/')).map(c => c.body.state);
+    assert.deepEqual(passStates, ['pending', 'success']);
+
+    // 2. Failing PR
+    calls.length = 0;
+    const resFail = await commitlintbot({
+      repo: 'test/repo',
+      srcRepo: 'test/repo',
+      sha: 'abcdef1234567890abcdef1234567890abcdef12',
+      pr: 200,
+    });
+    assert.equal(resFail.status, 201);
+    const failStates = calls.filter(c => c.url.includes('/statuses/')).map(c => c.body.state);
+    assert.deepEqual(failStates, ['pending', 'failure']);
+
+    // 3. Error PR (404 on getPRTitle)
+    calls.length = 0;
+    const resErr = await commitlintbot({
+      repo: 'test/repo',
+      srcRepo: 'test/repo',
+      sha: 'abcdef1234567890abcdef1234567890abcdef12',
+      pr: 300,
+    });
+    assert.equal(resErr.status, 201);
+    const errStates = calls.filter(c => c.url.includes('/statuses/')).map(c => c.body.state);
+    assert.deepEqual(errStates, ['pending', 'error']);
+  } finally {
+    global.fetch = originalFetch;
+  }
+});
+

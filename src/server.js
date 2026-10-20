@@ -1,8 +1,5 @@
 'use strict';
 
-const bodyParser = require('body-parser');
-const server = require('express')();
-const Queue = require('promise-queue');
 const Raven = require('raven');
 
 const {version} = require('../package.json');
@@ -10,17 +7,12 @@ const commitlintbot = require('./');
 const viewDetails = require('./view-details');
 
 const log = console;
-const PORT = process.env.PORT || 3000;
-const queue = new Queue(1, process.env.STAGE_CI_MAX_QUEUE || 100);
-
-// github's webhook MUST use `application/json`
-// server.use(bodyParser.json());
 
 const indexGET = (request, response) => {
-  response.json({version, queue});
+  response.json({version});
 };
 
-const indexPOST = (request, response) => {
+const indexPOST = async (request, response) => {
   let prData;
   try {
     const {headers, body} = request;
@@ -60,34 +52,31 @@ const indexPOST = (request, response) => {
     return response.status(500).send(err);
   }
 
-  queue.add(async _ => {
-    log.info(`> Calling commitlint bot with received webhook data`);
-    try {
-      const {status, data} = await commitlintbot(prData);
-      // Some status API call failure
-      if (data.error) {
-        if (status === 404)
-          return response
-            .status(403)
-            .send(
-              'Organization permissions for commitlintbot not Allowed. See https://github.com/paulirish/commitlintbot#installation '
-            );
-        return response.status(403).send(data.error);
-      }
-      response.status(200).send('Successful commitlintbot run');
-      console.log(`> Succcessful commitlint bot run. (GH Status API statuscode: ${status})`);
-    } catch (err) {
-      response.status(500).send(err);
-      Raven.captureException(err);
-      console.error('⚠️ server caught error', err, err.stack);
+  log.info(`> Calling commitlint bot with received webhook data`);
+  try {
+    const {status, data} = await commitlintbot(prData);
+    // Some status API call failure
+    if (data.error) {
+      if (status === 404)
+        return response
+          .status(403)
+          .send(
+            'Organization permissions for commitlintbot not Allowed. See https://github.com/paulirish/commitlintbot#installation '
+          );
+      return response.status(403).send(data.error);
     }
-    log.info('> Done!');
-  });
+    response.status(200).send('Successful commitlintbot run');
+    console.log(`> Succcessful commitlint bot run. (GH Status API statuscode: ${status})`);
+  } catch (err) {
+    response.status(500).send(err);
+    Raven.captureException(err);
+    console.error('⚠️ server caught error', err, err.stack);
+  }
+  log.info('> Done!');
 };
-
 
 module.exports = {
   indexGET,
   indexPOST,
   viewDetails,
-}
+};

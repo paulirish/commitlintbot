@@ -1,46 +1,93 @@
 'use strict';
 
-const commitlint = require('@commitlint/core');
-const mergeCZWithBaseConfig = require('commitlint-config-cz/lib/config').get;
 const defaultClintConfig = require('./default-commitlint.config');
+
+let _commitlintLint;
+async function getCommitlintLint() {
+  if (!_commitlintLint) {
+    try {
+      const mod = await import('@commitlint/lint');
+      _commitlintLint = mod.default || mod;
+    } catch {
+      _commitlintLint = require('@commitlint/lint');
+    }
+  }
+  return _commitlintLint;
+}
+
+function mergeCZWithBaseConfig(czConfig, baseConfig) {
+  const config = structuredClone(baseConfig);
+  config.rules = config.rules || {};
+
+  if (Array.isArray(config.extends)) {
+    const idx = config.extends.indexOf('cz');
+    if (idx > -1) config.extends.splice(idx, 1);
+  }
+
+  if (czConfig) {
+    if (czConfig.types) {
+      const types = czConfig.types.map(t => (typeof t === 'string' ? t : t.value));
+      if (types.length) {
+        config.rules['type-enum'] = [2, 'always', types];
+      } else {
+        delete config.rules['type-enum'];
+      }
+    }
+
+    if (czConfig.scopes || czConfig.scopeOverrides) {
+      const scopes = [];
+      if (czConfig.scopes) {
+        for (const s of czConfig.scopes) {
+          scopes.push(typeof s === 'string' ? s : s.name);
+        }
+      }
+      if (czConfig.scopeOverrides) {
+        for (const type of Object.keys(czConfig.scopeOverrides)) {
+          for (const s of czConfig.scopeOverrides[type]) {
+            scopes.push(typeof s === 'string' ? s : s.name);
+          }
+        }
+      }
+      const uniqueScopes = Array.from(new Set(scopes));
+      if (uniqueScopes.length) {
+        config.rules['scope-enum'] = [2, 'always', uniqueScopes];
+      } else {
+        delete config.rules['scope-enum'];
+      }
+    }
+  }
+
+  return config;
+}
+
+function formatReport(reportObj) {
+  const {errors = [], warnings = []} = reportObj;
+  const problems = [...errors, ...warnings].map(p => {
+    const sign = p.level === 2 ? '✖' : p.level === 1 ? '⚠' : ' ';
+    return `${sign}   ${p.message} [${p.name}]`;
+  });
+  if (!problems.length) return [];
+  const sign = errors.length > 0 ? '✖' : warnings.length > 0 ? '⚠' : '✔';
+  return [...problems, '', `${sign}   found ${errors.length} problems, ${warnings.length} warnings`];
+}
 
 async function lint(prTitle, clintConfig, czConfig) {
   console.log(`> Linting: ${prTitle}`);
 
-  // Use provided commitlint.config or fallback to our local preset
   const baseConfig = clintConfig || defaultClintConfig;
-  baseConfig.extends = baseConfig.extends || [];
+  const mergedConfig = mergeCZWithBaseConfig(czConfig, baseConfig);
 
-  let mergedConfig;
-  if (czConfig) {
-    // Hack because clint has this CRAZY FUCKING module loader if it sees an .extends prop
-    const index = baseConfig.extends.indexOf('cz');
-    index > -1 && baseConfig.extends.splice(index, 1);
-
-    // Hack because of some weird expectation inside of commitlint-config-cz/lib/config').get;
-    if (czConfig.scopes.length && !baseConfig.rules['scope-enum']) {
-      baseConfig.rules['scope-enum'] = [2, 'always'];
+  // Remove deprecated rules
+  if (mergedConfig.rules) {
+    for (const deprecatedRule of ['body-tense', 'footer-tense', 'lang', 'subject-tense']) {
+      delete mergedConfig.rules[deprecatedRule];
     }
-    if (czConfig.types.length && !baseConfig.rules['type-enum']) {
-      baseConfig.rules['type-enum'] = [2, 'always'];
-    }
-
-    mergedConfig = mergeCZWithBaseConfig(czConfig, baseConfig);
-  } else {
-    mergedConfig = baseConfig;
   }
 
-  // HACK remove deprecated rules. Can be removed after existing PRs
-  for (const deprecatedRule of ['body-tense', 'footer-tense', 'lang', 'subject-tense']) {
-    delete mergedConfig.rules[deprecatedRule];
-  }
-
-  const opts = await commitlint.load(mergedConfig);
   try {
-    const reportObj = await commitlint.lint(prTitle, opts.rules);
-    let report = await commitlint.format.formatResult(reportObj, {color: false});
-    // drop weird helpURL https://github.com/conventional-changelog/commitlint/blob/master/docs/reference-api.md#usage
-    report = report.slice(0, report.length - 2);
+    const commitlintLint = await getCommitlintLint();
+    const reportObj = await commitlintLint(prTitle, mergedConfig.rules);
+    const report = formatReport(reportObj);
     return {reportObj, report};
   } catch (e) {
     return {
@@ -50,8 +97,18 @@ async function lint(prTitle, clintConfig, czConfig) {
         warnings: [],
       },
       report: [e.message]
-    }
+    };
   }
 }
 
+lint.mergeCZWithBaseConfig = mergeCZWithBaseConfig;
+lint.formatReport = formatReport;
 module.exports = lint;
+
+if (require.main === module) {
+  const prTitle = process.argv[2] || 'feat: awesome feature';
+  lint(prTitle).then(({reportObj, report}) => {
+    console.log(reportObj.valid ? '✅ Valid' : '❌ Invalid');
+    if (report.length) console.log(report.join('\n'));
+  });
+}

@@ -6,9 +6,8 @@ Raven.config(
   'https://7b0de65a1e1f43a1bfc3ff0048b3a0eb:1491617418f048cdb1da1b9179575fbc@sentry.io/235838'
 ).install();
 
-const CommitStatus = require('github-build');
-const requireFromString = require('require-from-string');
-const {getPRTitle, getFileContents} = require('./github.js');
+const Module = require('node:module');
+const {getPRTitle, getFileContents, CommitStatus} = require('./github.js');
 const {generateURL} = require('./view-details.js');
 
 const lint = require('./lint');
@@ -25,7 +24,10 @@ const baseGithubData = {
 function loadConfigFromString(content) {
   if (!content) return undefined;
   const cjsContent = content.replace(/^\s*export\s+default\b/m, 'module.exports =');
-  const mod = requireFromString(cjsContent);
+  const m = new Module('config.js');
+  m.paths = Module._nodeModulePaths(process.cwd());
+  m._compile(cjsContent, 'config.js');
+  const mod = m.exports;
   return mod && mod.__esModule && mod.default ? mod.default : mod;
 }
 
