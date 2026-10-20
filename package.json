@@ -8,7 +8,7 @@
   },
   "packageManager": "yarn@1.22.22",
   "scripts": {
-    "test": "jest",
+    "test": "node --test __tests__/*.js",
     "demo": "node src/lint.js \"feat: awesome feature\""
   },
   "files": [
